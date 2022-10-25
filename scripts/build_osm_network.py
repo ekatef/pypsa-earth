@@ -116,6 +116,13 @@ def add_line_endings_tosubstations(substations, lines):
 
     return buses
 
+def find_close_nodes(buses_geom, i, tol):
+
+    # get substations within tolerance
+    close_nodes = np.flatnonzero(
+        buses_geom.distance(buses_geom.loc[i]) <= tol
+    )
+    return(close_nodes)
 
 # tol in m
 @profile
@@ -152,10 +159,14 @@ def set_substations_ids(buses, distance_crs, tol=2000):
         if buses.loc[i, "station_id"] >= 0:
             continue
 
-        # get substations within tolerance
-        close_nodes = np.flatnonzero(
-            temp_bus_geom.distance(temp_bus_geom.loc[i]) <= tol
-        )
+        # # get substations within tolerance
+        # close_nodes = np.flatnonzero(
+        #     temp_bus_geom.distance(temp_bus_geom.loc[i]) <= tol
+        # )
+
+        close_nodes = find_close_nodes2(temp_bus_geom, i, tol = tol)
+        # print("close_nodes")
+        # print(close_nodes)
 
         if len(close_nodes) == 1:
             # if only one substation is in tolerance, then the substation is the current one iì
