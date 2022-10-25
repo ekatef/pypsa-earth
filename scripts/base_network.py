@@ -76,6 +76,15 @@ from shapely.ops import unary_union
 
 logger = logging.getLogger(__name__)
 
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
 
 def _get_oid(df):
     if "tags" in df.columns:

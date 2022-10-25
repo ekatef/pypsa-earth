@@ -15,7 +15,15 @@ from _helpers import configure_logging, save_to_geojson, to_csv_nafix
 
 logger = logging.getLogger(__name__)
 
-
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
 def prepare_substation_df(df_all_substations):
     """
     Prepare raw substations dataframe to the structure compatible with PyPSA-Eur

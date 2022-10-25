@@ -39,6 +39,15 @@ _logger.setLevel(logging.INFO)
 
 sets_path_to_root("pypsa-earth")
 
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
 
 def download_GADM(country_code, update=False, out_logging=False):
     """

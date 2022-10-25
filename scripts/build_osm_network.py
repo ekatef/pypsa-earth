@@ -18,6 +18,17 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
+
+
 def line_endings_to_bus_conversion(lines):
     # Assign to every line a start and end point
 
