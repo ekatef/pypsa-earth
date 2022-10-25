@@ -116,6 +116,7 @@ def add_line_endings_tosubstations(substations, lines):
 
     return buses
 
+@profile
 def find_close_nodes(buses_geom, i, tol):
 
     # get substations within tolerance
@@ -129,6 +130,9 @@ def np_eucl_distance(mx_coord_list, vct_coord_list):
     v = np.array(vct_coord_list)
     dist_vect = np.linalg.norm(A - v, axis = 1)
     return(dist_vect)
+
+
+@profile
 def find_close_nodes2(buses_geom, i, tol):
 
             # _ = list(pool.map(_process_func_pop, country_codes))
