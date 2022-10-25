@@ -24,6 +24,8 @@ def profile(func):
         profiler.dump_stats(profile_filename)
         return result
     return wrapper
+
+@profile
 def prepare_substation_df(df_all_substations):
     """
     Prepare raw substations dataframe to the structure compatible with PyPSA-Eur
@@ -81,7 +83,7 @@ def prepare_substation_df(df_all_substations):
 
     return df_all_substations
 
-
+@profile
 def add_line_endings_tosubstations(substations, lines):
     # extract columns from substation df
     bus_s = gpd.GeoDataFrame(columns=substations.columns)
@@ -131,7 +133,7 @@ def add_line_endings_tosubstations(substations, lines):
 
     return buses
 
-
+@profile
 def set_unique_id(df, col):
     """
     Create unique id's, where id is specified by the column "col"
@@ -161,7 +163,7 @@ def set_unique_id(df, col):
 
     return df
 
-
+@profile
 def split_cells(df, lst_col="voltage"):
     """
     Split semicolon separated cells i.e. [66000;220000] and create new identical rows
@@ -182,7 +184,7 @@ def split_cells(df, lst_col="voltage"):
     ).assign(**{lst_col: np.concatenate(x[lst_col].values)})[x.columns.tolist()]
     return x
 
-
+@profile
 def filter_voltage(df, threshold_voltage=35000):
 
     # Drop any row with N/A voltage
@@ -205,7 +207,7 @@ def filter_voltage(df, threshold_voltage=35000):
 
     return df
 
-
+@profile
 def finalize_substation_types(df_all_substations):
     """
     Specify bus_id and voltage columns as integer
@@ -215,7 +217,7 @@ def finalize_substation_types(df_all_substations):
 
     return df_all_substations
 
-
+@profile
 def prepare_lines_df(df_lines):
     """
     This function prepares the dataframe for lines and cables
@@ -272,7 +274,7 @@ def prepare_lines_df(df_lines):
 
     return df_lines
 
-
+@profile
 def finalize_lines_type(df_lines):
     """
     This function is aimed at finalizing the type of the columns of the dataframe
@@ -281,7 +283,7 @@ def finalize_lines_type(df_lines):
 
     return df_lines
 
-
+@profile
 def split_cells_multiple(df, list_col=["cables", "circuits", "voltage"]):
     """
     Split function for cables and voltage
@@ -365,7 +367,7 @@ dropped_circuits_tags = [
     x for x in circuits_tag_to_n_circuits.keys() if circuits_tag_to_n_circuits[x] == "0"
 ]
 
-
+@profile
 def integrate_lines_df(df_all_lines, distance_crs):
     """
     Function to add underground, under_construction, frequency and circuits
@@ -555,7 +557,7 @@ def integrate_lines_df(df_all_lines, distance_crs):
 
     return df_all_lines
 
-
+@profile
 def filter_lines_by_geometry(df_all_lines):
 
     # drop None geometries
@@ -568,7 +570,7 @@ def filter_lines_by_geometry(df_all_lines):
 
     return df_all_lines
 
-
+@profile
 def prepare_generators_df(df_all_generators):
     """
     Prepare the dataframe for generators
@@ -598,7 +600,7 @@ def prepare_generators_df(df_all_generators):
 
     return df_all_generators
 
-
+@profile
 def find_first_overlap(geom, country_geoms, default_name):
     """Return the first country whose shape intersects the geometry"""
     for c_name, c_geom in country_geoms.items():
@@ -606,7 +608,7 @@ def find_first_overlap(geom, country_geoms, default_name):
             return c_name
     return default_name
 
-
+@profile
 def set_countryname_by_shape(
     df,
     ext_country_shapes,
@@ -625,7 +627,7 @@ def set_countryname_by_shape(
     df.dropna(subset=[col_country], inplace=True)
     return df
 
-
+@profile
 def create_extended_country_shapes(country_shapes, offshore_shapes):
     """Obtain the extended country shape by merging on- and off-shore shapes"""
 
@@ -644,7 +646,7 @@ def create_extended_country_shapes(country_shapes, offshore_shapes):
 
     return merged_shapes
 
-
+@profile
 def set_name_by_closestcity(df_all_generators, colname="name"):
     """
     Function to set the name column equal to the name of the closest city
@@ -663,7 +665,7 @@ def set_name_by_closestcity(df_all_generators, colname="name"):
 
     return df_all_generators
 
-
+@profile
 def clean_data(
     input_files,
     output_files,

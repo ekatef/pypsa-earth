@@ -118,6 +118,7 @@ def add_line_endings_tosubstations(substations, lines):
 
 
 # tol in m
+@profile
 def set_substations_ids(buses, distance_crs, tol=2000):
     """
     Function to set substations ids to buses, accounting for location tolerance
@@ -187,7 +188,7 @@ def set_substations_ids(buses, distance_crs, tol=2000):
                         break
                 buses.loc[buses.index[close_nodes], "station_id"] = sub_id
 
-
+@profile
 def set_lines_ids(lines, buses, distance_crs):
     """
     Function to set line buses ids to the closest bus in the list
@@ -583,7 +584,7 @@ def set_lv_substations(buses):
 #       There may be the need to split a line in several segments in the case the line is within tolerance with
 #       respect to a node
 
-
+@profile
 def merge_stations_lines_by_station_id_and_voltage(
     lines, buses, geo_crs, distance_crs, tol=2000
 ):
@@ -795,7 +796,7 @@ def fix_overpassing_lines(lines, buses, distance_crs, tol=1):
 
     return lines, buses
 
-
+@profile
 def built_network(inputs, outputs, geo_crs, distance_crs):
 
     logger.info("Stage 1/5: Read input data")

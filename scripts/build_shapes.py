@@ -49,6 +49,7 @@ def profile(func):
         return result
     return wrapper
 
+# @profile
 def download_GADM(country_code, update=False, out_logging=False):
     """
     Download gpkg file from GADM for a given country code
@@ -91,7 +92,7 @@ def download_GADM(country_code, update=False, out_logging=False):
 
     return GADM_inputfile_gpkg, GADM_filename
 
-
+# @profile
 def get_GADM_layer(country_list, layer_id, geo_crs, update=False, outlogging=False):
     """
     Function to retrive a specific layer id of a geopackage for a selection of countries
@@ -143,7 +144,7 @@ def get_GADM_layer(country_list, layer_id, geo_crs, update=False, outlogging=Fal
 
     return geodf_GADM
 
-
+# @profile
 def _simplify_polys(polys, minarea=0.0001, tolerance=0.008, filterremote=False):
     "Function to simplify the shape polygons"
     if isinstance(polys, MultiPolygon):
@@ -162,7 +163,7 @@ def _simplify_polys(polys, minarea=0.0001, tolerance=0.008, filterremote=False):
             polys = mainpoly
     return polys.simplify(tolerance=tolerance)
 
-
+# @profile
 def countries(countries, geo_crs, update=False, out_logging=False):
     "Create country shapes"
 
@@ -181,7 +182,7 @@ def countries(countries, geo_crs, update=False, out_logging=False):
 
     return ret_df
 
-
+# @profile
 def country_cover(country_shapes, eez_shapes=None, out_logging=False, distance=0.1):
 
     if out_logging:
@@ -196,7 +197,7 @@ def country_cover(country_shapes, eez_shapes=None, out_logging=False, distance=0
 
     return africa_shape
 
-
+# @profile
 def save_to_geojson(df, fn):
     if os.path.exists(fn):
         os.unlink(fn)  # remove file if it exists
@@ -213,7 +214,7 @@ def save_to_geojson(df, fn):
         with open(fn, "w") as fp:
             pass
 
-
+# @profile
 def load_EEZ(countries_codes, geo_crs, EEZ_gpkg="./data/eez/eez_v11.gpkg"):
     """
     Function to load the database of the Exclusive Economic Zones.
@@ -244,7 +245,7 @@ def load_EEZ(countries_codes, geo_crs, EEZ_gpkg="./data/eez/eez_v11.gpkg"):
 
     return geodf_EEZ
 
-
+# @profile
 def eez(countries, geo_crs, country_shapes, EEZ_gpkg, out_logging=False, distance=0.01):
     """
     Creates offshore shapes by
@@ -297,7 +298,7 @@ def eez(countries, geo_crs, country_shapes, EEZ_gpkg, out_logging=False, distanc
 
     return ret_df
 
-
+# @profile
 def download_WorldPop(
     country_code,
     worldpop_method,
@@ -330,7 +331,7 @@ def download_WorldPop(
             country_code, year, update, out_logging, size_min
         )
 
-
+# @profile
 def download_WorldPop_standard(
     country_code,
     year=2020,
@@ -401,7 +402,7 @@ def download_WorldPop_standard(
 
     return WorldPop_inputfile, WorldPop_filename
 
-
+# @profile
 def download_WorldPop_API(
     country_code, year=2020, update=False, out_logging=False, size_min=300
 ):
@@ -455,7 +456,7 @@ def download_WorldPop_API(
 
     return WorldPop_inputfile, WorldPop_filename
 
-
+# @profile
 def convert_GDP(name_file_nc, year=2015, out_logging=False):
     """
     Function to convert the nc database of the GDP to tif, based on the work at https://doi.org/10.1038/sdata.2018.4.
@@ -500,7 +501,7 @@ def convert_GDP(name_file_nc, year=2015, out_logging=False):
 
     return GDP_tif, name_file_tif
 
-
+# @profile
 def load_GDP(
     countries_codes,
     year=2015,
@@ -531,7 +532,7 @@ def load_GDP(
 
     return GDP_tif, name_file_tif
 
-
+# @profile
 def generalized_mask(src, geom, **kwargs):
     "Generalize mask function to account for Polygon and MultiPolygon"
     if geom.geom_type == "Polygon":
@@ -541,7 +542,7 @@ def generalized_mask(src, geom, **kwargs):
     else:
         return mask(src, geom, **kwargs)
 
-
+# @profile
 def _sum_raster_over_mask(shape, img):
     """
     Function to sum the raster value within a shape
@@ -561,7 +562,7 @@ def _sum_raster_over_mask(shape, img):
 
     return out_sum
 
-
+# @profile
 def add_gdp_data(
     df_gadm,
     year=2020,
@@ -634,12 +635,12 @@ def add_gdp_data(
     #     # update the gdp data in the dataset
     #     df_gadm.loc[index, "gdp"] = gdp_by_geom
 
-
+# @profile
 def _init_process_pop(df_gadm_, year_, worldpop_method_):
     global df_gadm, year, worldpop_method
     df_gadm, year, worldpop_method = df_gadm_, year_, worldpop_method_
 
-
+# @profile
 def _process_func_pop(c_code):
 
     # get subset by country code
@@ -659,7 +660,7 @@ def _process_func_pop(c_code):
 
     return country_rows
 
-
+# @profile
 def add_population_data(
     df_gadm,
     country_codes,
@@ -740,7 +741,7 @@ def add_population_data(
                 for elem in _:
                     df_gadm.loc[elem.index, "pop"] = elem["pop"]
 
-
+@profile
 def gadm(
     worldpop_method,
     gdp_method,

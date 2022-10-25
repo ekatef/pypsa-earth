@@ -86,20 +86,21 @@ def profile(func):
         return result
     return wrapper
 
+@profile
 def _get_oid(df):
     if "tags" in df.columns:
         return df.tags.str.extract('"oid"=>"(\\d+)"', expand=False)
     else:
         return pd.Series(np.nan, df.index)
 
-
+@profile
 def get_country(df):
     if "tags" in df.columns:
         return df.tags.str.extract('"country"=>"([A-Z]{2})"', expand=False)
     else:
         return pd.Series(np.nan, df.index)
 
-
+@profile
 def _find_closest_links(links, new_links, distance_upper_bound=1.5):
     treecoords = np.asarray(
         [np.asarray(shapely.wkt.loads(s))[[0, -1]].flatten() for s in links.geometry]
@@ -121,7 +122,7 @@ def _find_closest_links(links, new_links, distance_upper_bound=1.5):
         .sort_index()["i"]
     )
 
-
+@profile
 def _load_buses_from_osm():
     buses = (
         read_csv_nafix(snakemake.input.osm_buses)
@@ -152,7 +153,7 @@ def _load_buses_from_osm():
 
     return buses
 
-
+@profile
 def _set_links_underwater_fraction(n):
     if n.links.empty:
         return
@@ -166,7 +167,7 @@ def _set_links_underwater_fraction(n):
             links.intersection(offshore_shape).length / links.length
         )
 
-
+@profile
 def _load_lines_from_osm(buses):
     lines = (
         read_csv_nafix(
@@ -191,8 +192,8 @@ def _load_lines_from_osm(buses):
 
     return lines
 
-
-# TODO Seems to be not needed anymore
+# TODO the function Seems to be not needed anymore
+@profile
 def _load_links_from_osm(buses):
     # the links file can be empty
     if os.path.getsize(snakemake.input.osm_converters) == 0:
@@ -222,7 +223,7 @@ def _load_links_from_osm(buses):
 
     return links
 
-
+@profile
 def _load_converters_from_osm(buses):
     # the links file can be empty
     if os.path.getsize(snakemake.input.osm_converters) == 0:
@@ -240,7 +241,7 @@ def _load_converters_from_osm(buses):
 
     return converters
 
-
+@profile
 def _load_transformers_from_osm(buses):
     transformers = (
         read_csv_nafix(
@@ -254,7 +255,7 @@ def _load_transformers_from_osm(buses):
 
     return transformers
 
-
+@profile
 def _set_electrical_parameters_lines(lines):
     v_noms = snakemake.config["electricity"]["voltages"]
     linetypes = snakemake.config["lines"]["types"]
@@ -266,7 +267,7 @@ def _set_electrical_parameters_lines(lines):
 
     return lines
 
-
+@profile
 def _set_electrical_parameters_dc_lines(lines):
     v_noms = snakemake.config["electricity"]["voltages"]
     lines["carrier"] = "DC"
@@ -277,7 +278,7 @@ def _set_electrical_parameters_dc_lines(lines):
 
     return lines
 
-
+@profile
 def _set_electrical_parameters_links(links):
     if links.empty:
         return links
@@ -290,7 +291,7 @@ def _set_electrical_parameters_links(links):
 
     return links
 
-
+@profile
 def _set_electrical_parameters_transformers(transformers):
     config = snakemake.config["transformers"]
 
@@ -301,7 +302,7 @@ def _set_electrical_parameters_transformers(transformers):
 
     return transformers
 
-
+@profile
 def _set_electrical_parameters_converters(converters):
     p_max_pu = snakemake.config["links"].get("p_max_pu", 1.0)
     converters["p_max_pu"] = p_max_pu
@@ -315,7 +316,7 @@ def _set_electrical_parameters_converters(converters):
 
     return converters
 
-
+@profile
 def _set_lines_s_nom_from_linetypes(n):
     # Info: n.line_types is a lineregister from pypsa/pandapowers
     n.lines["s_nom"] = (
@@ -331,13 +332,13 @@ def _set_lines_s_nom_from_linetypes(n):
         * n.lines.num_parallel
     )
 
-
+@profile
 def _remove_dangling_branches(branches, buses):
     return pd.DataFrame(
         branches.loc[branches.bus0.isin(buses.index) & branches.bus1.isin(buses.index)]
     )
 
-
+@profile
 def _set_countries_and_substations(n):
 
     buses = n.buses
@@ -411,7 +412,7 @@ def _set_countries_and_substations(n):
 
     return buses
 
-
+@profile
 def _rebase_voltage_to_config(component):
     """
     Rebase the voltage of components to the config.yaml input
@@ -443,7 +444,7 @@ def _rebase_voltage_to_config(component):
 
     return component
 
-
+@profile
 def base_network():
     buses = _load_buses_from_osm().reset_index()
     lines = _load_lines_from_osm(buses)
