@@ -55,6 +55,8 @@ Description
 -----------
 
 """
+import cProfile as cProfile
+
 import logging
 import os
 

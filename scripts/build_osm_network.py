@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: : 2021 PyPSA-Africa Authors
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+import cProfile
 import logging
 import os
 
