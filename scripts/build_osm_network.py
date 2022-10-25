@@ -124,6 +124,35 @@ def find_close_nodes(buses_geom, i, tol):
     )
     return(close_nodes)
 
+def find_close_nodes2(buses_geom, i, tol):
+
+            # _ = list(pool.map(_process_func_pop, country_codes))
+            #     for elem in _:
+            #         df_gadm.loc[elem.index, "pop"] = elem["pop"]
+
+    # coord_list = [(x,y) for x,y in zip(buses_geom.x , buses_geom.y)]
+    # coord_list = [(x,y) for x,y in np.dstack(buses_geom.x , buses_geom.y)]
+    # print("buses_geom.x")
+    # print(buses_geom.x)
+
+    # coord_list = np.dstack([buses_geom.x , buses_geom.y])
+
+    # https://stackoverflow.com/a/55317468/8465924
+
+    # coord_list = np.hstack([buses_geom.x, buses_geom.y])
+
+    # coord_list = [(x,y) for x,y in zip(buses_geom.x , buses_geom.y)]
+    # A = np.array(coord_list)
+    # v = np.array([buses_geom.loc[i].x, buses_geom.loc[i].y])
+    # dist_vect = np.linalg.norm(A - v, axis = 1)
+
+    mx = [(x,y) for x,y in zip(buses_geom.x , buses_geom.y)]
+    vct = [buses_geom.loc[i].x, buses_geom.loc[i].y]
+
+    dist_vect = np_eucl_distance(mx, vct)
+    close_nodes = np.flatnonzero(dist_vect <= tol)
+    return(close_nodes)
+
 # tol in m
 @profile
 def set_substations_ids(buses, distance_crs, tol=2000):
