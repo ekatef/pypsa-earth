@@ -341,16 +341,16 @@ def _remove_dangling_branches(branches, buses):
 @profile
 def _set_countries_and_substations(n):
 
-    buses = n.buses
-
     countries = snakemake.config["countries"]
     country_shapes = gpd.read_file(snakemake.input.country_shapes).set_index("name")[
         "geometry"
     ]
+
     offshore_shapes = unary_union(
         gpd.read_file(snakemake.input.offshore_shapes)["geometry"]
     )
 
+    buses = n.buses
     bus_locations = buses
     bus_locations = gpd.GeoDataFrame(
         bus_locations,
@@ -451,8 +451,8 @@ def base_network():
     transformers = _load_transformers_from_osm(buses)
     converters = _load_converters_from_osm(buses)
 
-    lines_ac = lines[lines.tag_frequency.astype(float) != 0]
-    lines_dc = lines[lines.tag_frequency.astype(float) == 0]
+    lines_ac = lines[lines.tag_frequency.astype(float) != 0].copy()
+    lines_dc = lines[lines.tag_frequency.astype(float) == 0].copy()
 
     lines_ac = _set_electrical_parameters_lines(lines_ac)
     lines_dc = _set_electrical_parameters_dc_lines(lines_dc)
@@ -514,4 +514,5 @@ if __name__ == "__main__":
     _set_links_underwater_fraction(n)
 
     n.buses = pd.DataFrame(n.buses.drop(columns="geometry"))
+    n.meta = snakemake.config
     n.export_to_netcdf(snakemake.output[0])

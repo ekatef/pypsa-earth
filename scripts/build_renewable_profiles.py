@@ -199,15 +199,11 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import progressbar as pgb
-import rasterio as rio
 import xarray as xr
 from _helpers import configure_logging, read_csv_nafix, sets_path_to_root
 from add_electricity import load_powerplants
 from pypsa.geo import haversine
-from rasterio.warp import transform_bounds
-from shapely.geometry import LineString, Polygon, box, shape
-from shapely.ops import transform
-from shapely.wkt import loads
+from shapely.geometry import LineString
 
 cc = coco.CountryConverter()
 
@@ -268,6 +264,43 @@ def get_hydro_capacity_annual_hydro_generation(
     return normalize_using_yearly
 
 
+def check_cutout_completness(cf):
+    """
+    Check if a cutout contains missed values.
+    That may be the case due to some issues witht accessibility of ERA5 data
+    See for details https://confluence.ecmwf.int/display/CUSF/Missing+data+in+ERA5T
+    Returns share of cutout cells with missed data
+    """
+    n_missed_cells = pd.isnull(cf).sum()
+    n_cells = len(np.ndarray.flatten(cf.data))
+    share_missed_cells = 100 * (n_missed_cells / n_cells)
+    if share_missed_cells > 0:
+        logger.warning(
+            f"A provided cutout contains missed data:\r\n content of {share_missed_cells:2.1f}% all cutout cells is lost"
+        )
+    return share_missed_cells
+
+
+def estimate_bus_loss(data_column, tech):
+    """
+    Calculated share of buses with data loss due to flaws in the cutout data.
+    Returns share of the buses with missed data
+    """
+    n_weights_initial = len(data_column)
+    n_lost_weights = pd.isnull(data_column).sum()
+    share_missed_buses = 100 * (n_lost_weights / n_weights_initial)
+    if share_missed_buses >= 30:
+        recommend_msg = "\r\nYou may want to re-generate the cutout"
+    else:
+        recommend_msg = ""
+
+    if n_lost_weights > 0:
+        logger.warning(
+            f"Missed cutout cells have resulted in data loss:\r\n for {tech} {share_missed_buses:2.1f}% buses overall {recommend_msg}"
+        )
+    return share_missed_buses
+
+
 if __name__ == "__main__":
     if "snakemake" not in globals():
         from _helpers import mock_snakemake
@@ -298,7 +331,15 @@ if __name__ == "__main__":
         logger.info(f"correction_factor is set as {correction_factor}")
 
     cutout = atlite.Cutout(paths["cutout"])
-    regions = gpd.read_file(paths.regions).set_index("name").rename_axis("bus")
+    regions = gpd.read_file(paths.regions)  # .set_index("name").rename_axis("bus")
+
+    assert not regions.empty, (
+        f"List of regions in {snakemake.input.regions} is empty, please "
+        "disable the corresponding renewable technology"
+    )
+
+    # do not pull up, set_index does not work if geo dataframe is empty
+    regions = regions.set_index("name").rename_axis("bus")
 
     if snakemake.config["cluster_options"]["alternative_clustering"]:
         regions = gpd.GeoDataFrame(
@@ -424,27 +465,6 @@ if __name__ == "__main__":
         if "natura" in config and config["natura"]:
             excluder.add_raster(paths.natura, nodata=0, allow_no_overlap=True)
 
-            natura = rio.open(paths.natura)
-            if not natura.crs == area_crs:
-                logger.warning(
-                    f"Coorginate referense system of 'natura.tiff' raster is {natura.crs} which is different from area_crs == {area_crs}"
-                )
-
-            # Spatial extent of the natura.tiff raster should cover the entire cutout area to avoid data losses
-            natura_orig_geom = loads(box(*natura.bounds).wkt)
-            natura_gejson = rio.warp.transform_geom(
-                src_crs=natura.crs, dst_crs=geo_crs, geom=natura_orig_geom
-            )
-            natura_geom = shape(natura_gejson)
-
-            nc_geom = box(*cutout.bounds)
-            cutout_in_natura = natura_geom.contains(nc_geom)
-
-            if not cutout_in_natura:
-                logger.warning(
-                    f"A provided 'natura.tiff' does not contain the selected cutout. The coordinates are in the following range\n\r *  cutout: left={cutout.bounds[0]:2.1f}, bottom={cutout.bounds[1]:2.1f}, right={cutout.bounds[2]:2.1f}, top={cutout.bounds[3]:2.1f};\n\r * 'natura.tiff': left={natura_geom.bounds[0]:2.1f}, bottom={natura_geom.bounds[1]:2.1f},right={natura_geom.bounds[2]:2.1f}, top={natura_geom.bounds[3]:2.2f}"
-                )
-
         if "copernicus" in config and config["copernicus"]:
             copernicus = config["copernicus"]
             excluder.add_raster(
@@ -498,6 +518,8 @@ if __name__ == "__main__":
         capacity_factor = correction_factor * func(capacity_factor=True, **resource)
         layout = capacity_factor * area * capacity_per_sqkm
 
+        n_cells_lost = check_cutout_completness(capacity_factor)
+
         profile, capacities = func(
             matrix=availability.stack(spatial=["y", "x"]),
             layout=layout,
@@ -529,7 +551,7 @@ if __name__ == "__main__":
         centre_of_mass = []
         for bus in buses:
             row = layoutmatrix.sel(bus=bus).data
-            nz_b = row != 0
+            nz_b = (row != 0) & (~pd.isnull(row))
             row = row[nz_b]
             co = coords[nz_b]
             distances = haversine(bus_coords.loc[bus], co)
@@ -548,6 +570,11 @@ if __name__ == "__main__":
                 average_distance.rename("average_distance"),
             ]
         )
+
+        if n_cells_lost > 0:
+            estimate_bus_loss(
+                data_column=ds.weight, tech=snakemake.wildcards.technology
+            )
 
         if snakemake.wildcards.technology.startswith("offwind"):
             logger.info("Calculate underwater fraction of connections.")

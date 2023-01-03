@@ -13,6 +13,7 @@ from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 
 from scripts.download_osm_data import create_country_list
 from scripts.add_electricity import get_load_paths_gegis
+from scripts.retrieve_databundle_light import datafiles_retrivedatabundle
 
 HTTP = HTTPRemoteProvider()
 
@@ -28,6 +29,8 @@ configfile: "configs/bundle_config.yaml"
 
 # convert country list according to the desired region
 config["countries"] = create_country_list(config["countries"])
+
+
 # create a list of iteration steps, required to solve the experimental design
 # each value is used as wildcard input e.g. solution_{unc}
 config["scenario"]["unc"] = [
@@ -102,39 +105,6 @@ rule plot_all_summaries:
             country=["all"] + config["countries"],
             ext=["png", "pdf"]
         ),
-
-
-def datafiles_retrivedatabundle(config):
-    listoutputs = [
-        dvalue["output"]
-        for (dname, dvalue) in config["databundles"].items()
-        if config.get("tutorial", False) == dvalue.get("tutorial", False)
-    ]
-    unique_outputs = set(
-        (
-            [
-                inneroutput
-                for output in listoutputs
-                for inneroutput in output
-                if "*" not in inneroutput
-                or inneroutput.endswith("/")  # exclude directories
-            ]
-        )
-    )
-
-    # when option build_natura_raster is enabled, remove natura.tiff from the outputs
-    if config["enable"].get("build_natura_raster", False):
-        unique_outputs = [
-            output for output in unique_outputs if "natura.tiff" not in output
-        ]
-
-    # when option build_cutout is enabled, remove cutouts from the outputs
-    if config["enable"].get("build_cutout", False):
-        unique_outputs = [
-            output for output in unique_outputs if "cutouts/" not in output
-        ]
-
-    return unique_outputs
 
 
 if config["enable"].get("retrieve_databundle", True):
@@ -383,6 +353,7 @@ rule add_electricity:
         **{
             f"profile_{tech}": f"resources/renewable_profiles/profile_{tech}.nc"
             for tech in config["renewable"]
+            if tech in config["electricity"]["renewable_carriers"]
         },
         **{
             f"conventional_{carrier}_{attr}": fn
@@ -713,12 +684,14 @@ rule build_test_configs:
     input:
         base_config="config.tutorial.yaml",
         update_file_list=[
+            "test/config.tutorial_noprogress.yaml",
             "test/config.custom.yaml",
             "test/config.monte_carlo.yaml",
             "test/config.landlock.yaml",
         ],
     output:
         tmp_test_configs=[
+            "test/tmp/config.tutorial_noprogress_tmp.yaml",
             "test/tmp/config.custom_tmp.yaml",
             "test/tmp/config.monte_carlo_tmp.yaml",
             "test/tmp/config.landlock_tmp.yaml",

@@ -190,7 +190,9 @@ def _compute_connection_costs_to_bus(
         adj = n.adjacency_matrix(
             weights=pd.concat(
                 dict(
-                    Link=connection_costs_per_link[tech].reindex(n.links.index),
+                    Link=connection_costs_per_link[tech]
+                    .reindex(n.links.index)
+                    .astype(float),
                     Line=pd.Series(0.0, n.lines.index),
                 )
             )
@@ -250,6 +252,7 @@ def _aggregate_and_move_components(
     generators, generators_pnl = aggregategenerators(
         n, busmap, custom_strategies=generator_strategies
     )
+
     replace_components(n, "Generator", generators, generators_pnl)
 
     for one_port in aggregate_one_ports:
@@ -501,7 +504,7 @@ if __name__ == "__main__":
         from _helpers import mock_snakemake
 
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        snakemake = mock_snakemake("simplify_network", simpl="", network="elec")
+        snakemake = mock_snakemake("simplify_network", simpl="")
     configure_logging(snakemake)
 
     n = pypsa.Network(snakemake.input.network)
@@ -546,6 +549,7 @@ if __name__ == "__main__":
 
     update_p_nom_max(n)
 
+    n.meta = dict(snakemake.config, **dict(wildcards=dict(snakemake.wildcards)))
     n.export_to_netcdf(snakemake.output.network)
 
     busmap_s = reduce(lambda x, y: x.map(y), busmaps[1:], busmaps[0])

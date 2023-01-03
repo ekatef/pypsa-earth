@@ -87,9 +87,9 @@ The PyPSA meets Earth team is currently running four types of meetings:
   - join updates, demos, Q&A's, discussions and the coordination of each work package
   
     1. Demand creation and prediction meeting, on demand basis
-    2. AI asset detection meeting, every Tuesday 15:30 (UK time), `download .ics file <https://drive.google.com/file/d/1U9LYvLBezaKn1IuELbKJts0DOGixQHOv/view?usp=sharing>`__
+    2. AI asset detection meeting, on demand basis
     3. Sector coupling meeting, every Thursday 09:00 (UK time), `download .ics file <https://drive.google.com/file/d/1TzUcilUdcsnsre7jTEcvyizftET93DQS/view?usp=sharing>`__
-    4. Data workflow and architecture meeting, every Thursday 13:30 (UK time), `download .ics file <https://drive.google.com/file/d/1w9uT6AIC9MIJotFcbglfVFCw1TKwF6bg/view?usp=sharing>`__
+    4. PyPSA-Earth meeting, every Thursday 16:00 (UK time), `download .ics file <https://drive.google.com/file/d/1yq6LEW6nYVJv2tRHWeKELSkx26ld6EQS/view?usp=sharing>`__
 
 - **Outreach meeting (by invitation)**
 
@@ -98,9 +98,9 @@ The PyPSA meets Earth team is currently running four types of meetings:
   
 - **Buddy talk (Open)**
 
-  - every Friday between 17-18:00 (UK time)
-  - book a 20min meeting with Max to discuss anything you like
-  - booking link: `app.autobook.me/max-parzen/pypsa-meets-earth <https://app.autobook.me/max-parzen/pypsa-meets-earth>`_ (developed by @mnm-matin)
+  - book a 30min meeting with Max to discuss anything you like
+  - booking link: `calendly.com/pypsa-meets-earth <https://calendly.com/pypsa-meets-earth/pypsa-meets-earth-exchange-30min>`_ (developed by @mnm-matin)
+calendly.com/pypsa-meets-earth
 
 =============
 Documentation
@@ -108,10 +108,12 @@ Documentation
 
 **Getting Started**
 
-* :doc:`how_to_docs`
 * :doc:`introduction`
 * :doc:`installation`
+* :doc:`short_tutorial`
 * :doc:`tutorial`
+* :doc:`data_workflow`
+* :doc:`notebooks`
 
 .. toctree::
    :hidden:
@@ -119,9 +121,11 @@ Documentation
    :caption: Getting Started
 
    introduction
-   installation
+   installation  
+   short_tutorial
    tutorial
-   how_to_docs
+   data_workflow    
+   notebooks
 
 **Configuration**
 
@@ -153,11 +157,13 @@ Documentation
    rules_overview
    api_reference
 
-**Project Info**
+**Help and References**
 
 * :doc:`release_notes`
-* :doc:`project_structure_and_credits`
 * :doc:`how_to_contribute`
+* :doc:`software_hints`
+* :doc:`learning_materials`
+* :doc:`project_structure_and_credits`
 * :doc:`talks_and_papers`
 
 .. toctree::
@@ -166,7 +172,9 @@ Documentation
    :caption: Project Info
 
    release_notes
-   project_structure_and_credits
    how_to_contribute
+   software_hints
+   learning_materials
+   project_structure_and_credits
    talks_and_papers
    

@@ -295,6 +295,7 @@ def eez(countries, geo_crs, country_shapes, EEZ_gpkg, out_logging=False, distanc
 
     # Drops empty geometry
     ret_df = ret_df_new.dropna()
+    ret_df = ret_df[ret_df.geometry.is_valid & ~ret_df.geometry.is_empty]
 
     return ret_df
 
@@ -795,6 +796,7 @@ def gadm(
     # set index and simplify polygons
     df_gadm.set_index("GADM_ID", inplace=True)
     df_gadm["geometry"] = df_gadm["geometry"].map(_simplify_polys)
+    df_gadm = df_gadm[df_gadm.geometry.is_valid & ~df_gadm.geometry.is_empty]
 
     return df_gadm
 
@@ -823,15 +825,19 @@ if __name__ == "__main__":
     distance_crs = snakemake.config["crs"]["distance_crs"]
 
     country_shapes = countries(countries_list, geo_crs, update, out_logging)
-    save_to_geojson(country_shapes, out.country_shapes)
+
+    country_shapes.reset_index().to_file(snakemake.output.country_shapes)
 
     offshore_shapes = eez(
         countries_list, geo_crs, country_shapes, EEZ_gpkg, out_logging
     )
-    save_to_geojson(offshore_shapes, out.offshore_shapes)
 
-    africa_shape = country_cover(country_shapes, offshore_shapes, out_logging)
-    save_to_geojson(gpd.GeoSeries(africa_shape), out.africa_shape)
+    offshore_shapes.reset_index().to_file(snakemake.output.offshore_shapes)
+
+    africa_shape = gpd.GeoDataFrame(
+        geometry=[country_cover(country_shapes, offshore_shapes.geometry)]
+    )
+    africa_shape.reset_index().to_file(snakemake.output.africa_shape)
 
     gadm_shapes = gadm(
         worldpop_method,

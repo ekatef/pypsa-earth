@@ -15,9 +15,7 @@ A short video explaining the logic of PyPSA-Eur which is similar to PyPSA-Earth:
 
     <iframe width="832" height="468" src="https://www.youtube.com/embed/ty47YU1_eeQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-For more details on PyPSA-Earth read our preliminary our milestone paper:
-
-Parzen et al., "PyPSA-Earth. A New Global Open Energy System Optimization Model Demonstrated in Africa", 2022, https://arxiv.org/abs/2209.04663.
+For more details on PyPSA-Earth read our milestone paper: Parzen et al., "PyPSA-Earth. A New Global Open Energy System Optimization Model Demonstrated in Africa", 2022, https://arxiv.org/abs/2209.04663.
 Please use the following BibTeX: ::
 
   @misc{PyPSAEarth,
@@ -73,7 +71,7 @@ The content in this package is organized in folders as described below; for more
 - ``envs``: Stores the conda environment files to successfully run the workflow.
 
 
-Licence
+License
 =======
 
 PyPSA-Earth work is released under multiple licenses:

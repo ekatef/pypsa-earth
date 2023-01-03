@@ -5,155 +5,244 @@
 
 .. _tutorial:
 
+
 ##########################################
 Tutorial
 ##########################################
 
-.. _prerequisites_learning_material:
+How to customise PyPSA-Earth?
+=============================
 
-Prerequisites and learning material
-===================================
-
-PyPSA meets Earth builds on top of several open-source packages, which are here recalled together with recommended sources to learn them from scratch.
-
-.. _data_science_basics:
-
-Data science basics (essential)
---------------------------------
-
-
-- Refresh your Python knowledge by watching `CSDojo's playlist <https://www.youtube.com/c/CSDojo/playlists>`_. His content is excellent as introduction. You will learn in effective short videos the python basics such as variables If/else statements, functions, lists, for loops, while loops, dictionaries, classes and objects, boolean, list comprehensions, sets - put your hands on and write some test scripts as the video suggests. (~3h)
-- Familiarize yourself with numpy and panda dataframes.  In the Python-based PyPSA tool, we do not work with Excel. Powerful panda dataframes are our friends. `Here <https://www.coursera.org/learn/python-data-analysis>`__ is an extensive 30h course that provides a great introduction if this is completely unfamiliar to you.
-- `Introduction to Unix-shell <https://swcarpentry.github.io/shell-novice/>`_ - "Use of the shell is fundamental to a wide range of advanced computing tasks, including high-performance computing and automated workflow. These lessons will introduce you to this powerful tool." (optional 4h, to become a pro)
-
-
-PyPSA Introduction (essential)
--------------------------------
-
-- Watch how PyPSA-Eur is designed https://www.youtube.com/watch?v=ty47YU1_eeQ (1h)
-- Watch and put your hands on to make PyPSA-Eur work on your computer https://www.youtube.com/watch?v=mAwhQnNRIvs (1-3h)
-- While watching these PyPSA videos always have a look into the excellent `PyPSA-Eur documentation <https://pypsa-eur.readthedocs.io/en/latest/index.html>`_
-- To see what data we can extract we work usually closely with the `basic PyPSA documentation <https://pypsa.readthedocs.io/en/latest/components.html>`_
-
-
-Git and GitHub (essential)
----------------------------
-
-For code collaboration we use GitHub. Which is a common source control tool that is a very popular collaborative code development tool. Here some notes if you are not already familiar with it:
-
-- Git and GitHub is not the same. Usually, you work with git on your computer (offline) to push changes to GitHub (online).
-- `Here <https://www.youtube.com/watch?v=8JJ101D3knE>`__ a great intro which we recommend
-- Learning by doing. Maybe one of the best ways to learn is to puts your hands on open a GitHub repository and upload/change/reverse files from your local computer on some dummy scripts.
-- This `cheatsheet <https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet>`_ might help using the Git commands
-
-
-Snakemake and advanced changes (essential)
--------------------------------------------
-
-Snakemake is our brain in PyPSA.
-It automates many tasks & keeps the code structure clean.
-Therefore, it is quite useful to learn if your task is to integrate features into PyPSA.
-We can recommend:
-
-- `snakemake basic and advanced tutorial here <https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html>`__ (takes max 3-5h and makes a lot of fun).
-- Explore how PyPSA uses snakemake in the Snakefile and scripts - the GitHub search function is your best friend to find quickly what interests you.
-
-
-Code environment (optional)
------------------------------
-
-We can recommend setting up VScode from Microsoft. Add some extension if you like as described in `this video <https://www.youtube.com/watch?v=0fROnrISdZU>`_. For instance GitHub, Gitlense, and maybe some others.
-
-*Note*: if you decide to use Visual Studio Code, check out the tutorial about how to use `Git <https://code.visualstudio.com/docs/editor/versioncontrol#_git-support>`_ and `Github <https://code.visualstudio.com/docs/editor/github>`_  in Visual Studio Code
-
-
-Notebooks
-===========
-
-In order to familiarize with the code or investigate the input and outputs of
-the rules, in the ``notebooks`` folder, the following notebooks are available:
-
-- ``network_comparison``: compares the network models developed along the data workflow; useful and interactive plots are generated
-- ``osm_build_network_plot``: provides specific plots and outputs for the ``download_osm_data`` rule
-- ``osm_data_access``: explains how OSM data are being loaded by using ``download_osm_data``
-- ``osm_powermap``: contains nice plots and description of the output of the data downloaded and cleaned by using ``download_osm_data`` and ``clean_osm_data``
-- ``solve_network_results``: provides useful plots and textual outputs to investigate the results of the last optimization performed using solve_network
-- ``build_bus_regions``: it explores the inputs and outputs of the ``build_bus_regions`` rule,
-  namely the bus regions shapes, and the elements of the network (lines, substations, etc.)
-- ``build_shapes``: describes the shapes created using the rule ``build_shapes`` for the on-shore and off-shore areas
-- ``demand_gegis``: it enables exploring th GeGIS dataset used to perform the analysis.
-  These data are obtained using the `GlobalEnergyGIS <https://github.com/niclasmattsson/GlobalEnergyGIS>`_ package for Africa.
-- ``shape_comparison``: this notebook enables comparing the shapes used along the data workflow
-- ``add_electricity``: it analyzes the outputs of the ``add_electricity`` rule, including the PyPSA model and the RES/demand inputs
-- ``base_network``: it eases the visualization and analysis of the output PyPSA network model that the rule ``base_network`` builds
-- ``build_cutout``: the notebook analyzes the outputs of the rule ``build_cutout`` rule, which are the solar, wind and hydro time series
-  generated with `Atlite <https://github.com/PyPSA/atlite/>`_
-- ``build_renewable_profiles``: it enables investigating the specific time series generated by the rule ``build_renewable_profiles``;
-  in particular, it shows the potential of selected resources (e.g. solar) and the corresponding time series of renewable energy production
-  available for selected buses
-- ``landuse-availability``: this notebook aims at showing how ``Atlite`` accounts for land constraints in the analysis
-
-
-Examples
-========
-
-Solve the optimal power flow
------------------------------------
-
-The following snakemake routine enables executing the optimal power flow problem
-for the current configuration using a 6-bus equivalent of the region.
+A good starting point to customize your model are settings of the default configuration file `config.default`. You may want to do a reserve copy of your current configuration file and then overwrite it by a default configuration:
 
 .. code:: bash
 
-    .../pypsa-earth % snakemake -j 1 results/networks/elec_s_6_ec_l.nc
+    .../pypsa-earth (pypsa-earth) % cp config.default.yaml config.yaml
 
-Change the country for the analysis
------------------------------------
+The model can be adapted to include any country, multiple countries (e.g. Nigeria and Benin) or continents (currently `Africa` work as a whole continent) using `countries` argument:
 
-In order to run the code for a set of countries different than the default ones,
-the option ``countries`` in the configuration yaml files shall be modified.
-To do so, follow the following procedure:
+.. code:: yaml
 
-1. Make a copy of the ``config.default.yaml`` file and rename it as ``config.yaml``
-2. In ``config.yaml`` modify the option ``countries = ["AA", ..., "ZZ"]`` with the list
-   of countries that you desire; 2-digit country codes are requested or region names.
+    countries: ["NG", "BJ"]
 
-   For example, to investigate Nigeria and South Africa, the following specification shall be applied in
-   the configuration file.
+Likewise, the example's temporal scope can be restricted (e.g. to 7 days):
 
-   .. code:: bash
+.. code:: yaml
 
-      countries = ["NG", "ZA"]
+    snapshots:
+        start: "2013-03-1"
+        end: "2013-03-7"
+        inclusive: "left" # end is not inclusive
 
-   The code also supports pre-set group of countries, such as africa. For example,
-   the African region can be simulated using:
+It is also possible to allow less or more carbon-dioxide emissions, while defining the current emissions.
+It is possible to model a net-zero target by setting the `co2limit` to zero:
 
-   .. code:: bash
+.. code:: yaml
 
-      countries = ["africa"]
+    electricity:
+        voltages: [220., 300., 380.]
+        co2limit: 1.487e+9
+        co2base: 1.487e+9
 
-Manual test of specific scripts
--------------------------------
+PyPSA-Earth can generate a database of existing conventional powerplants through open data sources.
+It is possible to select which types of powerplants to be included:
 
-The python scripts in the ``scripts`` folder are build so that they can be easily run and tested
-even without the snakemake procedure. This assumes you have all inputs of the rule 
-available (see Snakefile). For instance, let us run the ``build_shapes.py``.
-Looking at the Snakefile or the `workflow <https://pypsa-earth.readthedocs.io/en/latest/introduction.html#workflow>`_
-we need to run the ``retrieve_databundle_light.py`` manually or by snakemake:
+.. code:: yaml
 
-   .. code:: bash
-
-      snakemake --cores 1 retrieve_databundle_light
-
-Afterwards, you can manually run build_shapes.py or debug it.
+    extendable_carriers:
+        Generator: [solar, onwind, offwind-ac, offwind-dc, OCGT]
+        StorageUnit: [] # battery, H2
+        Store: [battery, H2]
+        Link: []  # H2 pipeline
 
 
-YouTube DevTutorials
----------------------
+To accurately model the temporal and spatial availability of renewables such as wind and solar energy, we rely on historical weather data.
+It is advisable to adapt the required range of coordinates to the selection of countries.
 
-If some of the above sounds quite unfamiliar, you might want to start with YouTube videos.
-We recorded the following which help you with VScode, git, reading errors and fixing bugs:
-- `How to set-up Visual Studio Code for Windows [PyPSA-Earth][DevTutorial]<https://www.youtube.com/watch?v=9cFOcDxDz7o&list=PLrn8FatUFb2qbNvAEPK9gU_SQ32ZhQBZG&index=1>`_
-- `Find a bug, create a fix, contribute a pull request [PyPSA-Earth] [DevTutorial]<https://www.youtube.com/watch?v=HBubZEpIeXk&list=PLrn8FatUFb2qbNvAEPK9gU_SQ32ZhQBZG&index=2>`_
-- `Land lock country bug - Understanding the bug [PyPSA-Earth][DevTutorial]<https://www.youtube.com/watch?v=zOQpV5bgPPk&list=PLrn8FatUFb2qbNvAEPK9gU_SQ32ZhQBZG&index=3>`_
-- `Land lock country bug - Fixing the bug [PyPSA-Earth][DevTutorial]<https://www.youtube.com/watch?v=6keiD6HvnmY&list=PLrn8FatUFb2qbNvAEPK9gU_SQ32ZhQBZG&index=4>`_
+.. code:: yaml
+
+    atlite:
+        nprocesses: 4
+        cutouts:
+                africa-2013-era5-tutorial:
+                    module: era5
+                    dx: 0.3  # cutout resolution
+                    dy: 0.3  # cutout resolution
+                    # The cutout time is automatically set by the snapshot range.
+
+It is also possible to decide which weather data source should be used to calculate potentials and capacity factor time-series for each carrier.
+For example, we may want to use the ERA-5 dataset for solar and not the default SARAH-2 dataset.
+
+.. code:: yaml
+
+    africa-2013-era5-tutorial:
+        module: era5
+
+.. code:: yaml
+
+    solar:
+        cutout: africa-2013-era5-tutorial
+
+Finally, it is possible to pick a solver. For instance, this tutorial uses the open-source solver glpk and does not rely
+on the commercial solvers such as Gurobi or CPLEX (for which free academic licenses are available).
+
+.. code:: yaml
+
+    solver:
+        name: glpk
+
+
+Be mindful that we only noted major changes to the provided default configuration that is comprehensibly documented in :ref:`config`.
+There are many more configuration options beyond what is adapted for the tutorial!
+
+How to execute different parts of the workflow?
+===============================================
+
+Snakemake is a workflow management tool inherited by PyPSA-Earth from PyPSA-Eur.
+Snakemake decomposes a large software process into a set of subtasks, or ’rules’, that are automatically chained to obtain the desired output.
+
+.. note::
+
+  ``Snakemake``, which is one of the major dependencies, will be automatically installed in the environment pypsa-earth, thereby there is no need to install it manually.
+
+The snakemake included in the conda environment pypsa-earth can be used to execute any custom rule with the following command:
+
+.. code:: bash
+
+    .../pypsa-earth (pypsa-earth) % snakemake < your custom rule >  
+
+Starting with essential usability features, the implemented PyPSA-Earth `Snakemake procedure <https://github.com/pypsa-meets-earth/pypsa-earth/blob/main/Snakefile>`_ that allows to flexibly execute the entire workflow with various options without writing a single line of python code. For instance, you can model the world energy system or any subset of countries only using the required data. Wildcards, which are special generic keys that can assume multiple values depending on the configuration options, help to execute large workflows with parameter sweeps and various options.
+
+You can execute some parts of the workflow in case you are interested in some specific it's parts.
+E.g. power grid topology may be extracted and cleaned with the following command which refers to the script name: 
+
+.. code:: bash
+
+    .../pypsa-earth (pypsa-earth) % snakemake -j 1 clean_osm_data
+
+Solar profile for the requested area may be calculated using the output name:
+
+.. code:: bash
+
+    .../pypsa-earth (pypsa-earth) % snakemake -j 1 resources/renewable_profiles/profile_solar.nc 
+
+
+How to use PyPSA-Earth for your energy problem?
+===============================================
+
+PyPSA-Earth mostly relies on the :ref:`global datasets <data_workflow>` and can be tailored to represent any part of the world in a few steps. The following procedure is recommended.
+
+1. Adjust the model configuration
+---------------------------------
+
+The main parameters needed to customize the inputs for your national-specific data are defined in the :ref:`configuration <config>` file `config.yaml`. The configuration settings should be adjusted according to a particular problem you are intended to model. The main regional-dependent parameters are:
+
+* `countries` parameter which defines a set of the countries to be included into the model;
+
+* `cutouts` and `cutout` parameters which refer to a name of the climate data archive (so called `cutout <https://atlite.readthedocs.io/en/latest/ref_api.html#cutout>`_) to be used for calculation of the renewable potential.
+
+Apart of that, it's worth to check that there is a proper match between the temporal and spatial parameters across the configuration file as it is essential to build the model properly. Generally, if there are any mysterious error message appearing during the first model run, there are chances that it can be resolved by a simple config check.
+
+It could be helpful to keep in mind the following points:
+
+1. the cutout name should be the same across the whole configuration file (there are several entries, one under under `atlite` and some under each of the `renewable` parameters);
+
+2. the countries of interest defined with `countries` list in the `config.yaml` should be covered by the cutout area;
+
+3. the cutout time dimension, the weather year used for demand modeling and the actual snapshot should match.
+
+2. Build the custom cutout
+--------------------------
+
+The cutout is the main concept of climate data management in PyPSA ecosystem introduced in `atlite <https://atlite.readthedocs.io/en/latest/>`_ package. The cutout is an archive containing a spatio-temporal subset of one or more topology and weather datasets. Since such datasets are typically global and span multiple decades, the Cutout class allows atlite to reduce the scope to a more manageable size. More details about the climate data processing concepts are contained in `JOSS paper <https://joss.theoj.org/papers/10.21105/joss.03294>`_.
+
+.. note::
+    Skip this recommendation if the region of your interest is within Africa and you are fine with the 2013 weather year
+
+The pre-built cutout for Africa is available for 2013 year and can be loaded directly from zenodo through the rule `retrieve_cutout`. There is also a smaller cutout for Africa built for a two-weeks time span; it is automatically downloaded when retrieving common data with `retrieve_databundle_light`.
+
+In case you are interested in other parts of the world you have to generate a cutout yourself using the `build_cutouts` rule. To run it you will need to: 
+
+1. be registered on  the `Copernicus Climate Data Store <https://cds.climate.copernicus.eu>`_;
+
+2. install `cdsapi` package  (can be installed with `pip`);
+
+3. setup your CDS API key as described `on their website <https://cds.climate.copernicus.eu/api-how-to>`_.
+
+These steps are required to use CDS API which allows an automatic file download while executing `build_cutouts` rule.
+
+Normally cutout extent is calculated from the shape of the requested region defined by the `countries` parameter in the configuration file `config.yaml`. It could make sense to set the countries list as big as it's feasible when generating a cutout. A considered area can be narrowed anytime when building a specific model by adjusting content of the `countries` list.
+
+There is also option to set the cutout extent specifying `x` and `y` values directly. However, these values will overwrite values extracted from the countries shape. Which means that nothing prevents `build_cutout` to extract data which has no relation to the requested countries. Please use direct definition of `x` and `y` only if you really understand what and why you are doing.
+
+The `build_cutout` flag should be set `true` to generate the cutout. After the cutout is ready, it's recommended to set `build_cutout` to `false` to avoid overwriting the existing cutout by accident.
+
+3. Build a natura.tiff raster
+-----------------------------
+
+A raster file `natura.tiff` is used to store shapes of the protected and reserved nature areas. Such landuse restrictions can be taking into account when calculating the renewable potential with `build_renewable_profiles`.
+
+.. note::
+    Skip this recommendation if the region of your interest is within Africa
+
+A pre-built `natura.tiff` is loaded along with other data needed to run a model with `retrieve_databundle_light` rule. Currently this raster is valid for Africa, global `natura.tiff` raster is under development. You may generate the `natura.tiff` for a region of interest using `build_natura_raster` rule which aggregates data on protected areas along the cutout extent.
+
+How to validate?
+================
+
+.. TODO add a list of actions needed to do the validation
+
+To validate the data obtained with PyPSA-Earth, we recommend to go through the procedure here detailed. An exampled of the validation procedure is available in the `Nigeria validation <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/validation_nigeria.ipynb>`_ notebook. Public information on the power system of Nigeria are compared to those obtained from the PyPSA-Earth model.
+
+Simulation procedure
+--------------------
+
+It may be recommended to check the following quantities the validation:
+
+#. inputs used by the model:
+
+    #. network characteristics;
+
+    #. substations;
+
+    #. installed generation by type;
+
+#. outputs of the simulation:
+
+    #. demand;
+
+    #. energy mix.
+
+Where to look for reference data
+--------------------------------
+ 
+Data availability for many parts of the world is still quite limited. Usually the best sources to compare with are regional data hubs. There is also a collection of harmonized datasets curated by the international organisations. A non-exhaustive list of helpful sources:
+
+* `World Bank <https://energydata.info/>`_;
+
+* International Renewable Energy Agency `IRENA <https://pxweb.irena.org/pxweb/en/IRENASTAT/IRENASTAT__Power%20Capacity%20and%20Generation/ELECCAP_2022_cycle2.px/>`_;
+
+* International Energy Agency `IEA <https://www.iea.org/data-and-statistics>`_;
+
+* `BP <https://www.bp.com/en/global/corporate/energy-economics/statistical-review-of-world-energy.html>`_ Statistical Review of World Energy;
+
+* International Energy Agency `IEA <https://www.iea.org/data-and-statistics>`_;
+
+* `Ember <https://ember-climate.org/data/data-explorer/>`_ Data Explorer.
+
+
+Advanced validation examples
+----------------------------
+
+The following validation notebooks are worth a look when validating your energy model:
+
+1. A detailed `network validation <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/network_validation.ipynb>`_.
+ 
+2. Analys of `the installed capacity <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/capacity_validation.ipynb>`_ for the considered area. 
+
+3. Validation of `the power demand <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/demand_validation.ipynb>`_ values and profile.
+
+4. Validation of `hydro <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/hydro_generation_validation.ipynb>`_, `solar and wind <https://github.com/pypsa-meets-earth/documentation/blob/main/notebooks/validation/renewable_potential_validation.ipynb>`_ potentials.
+
+
+.. include:: ./how_to_docs.rst

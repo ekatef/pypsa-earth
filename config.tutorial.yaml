@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-version: 0.0.2
+version: 1.0.0
 tutorial: true
 
 logging:
@@ -51,10 +51,8 @@ crs:
   area_crs: ESRI:54009  # projection for area measurements only. Possible recommended values are Global Mollweide "ESRI:54009"
 
 # CI relevant
-retrieve_databundle: # required for nice CI test output
-  show_progress: false # disable progress bar in retrieve_databundle
-# test
-
+retrieve_databundle: # required to be "false" for nice CI test output
+  show_progress: true # show (true) or do not show (false) the progress bar in retrieve_databundle while downloading data
 
 augmented_line_connection:
   add_to_snakefile: false  # If True, includes this rule to the workflow
@@ -115,7 +113,7 @@ load_options:
 
 electricity:
   voltages: [220., 300., 380.]
-  co2limit: 0
+  co2limit: 1.487e+9
   co2base: 1.487e+9
   agg_p_nom_limits: data/agg_p_nom_minmax.csv
   hvdc_as_lines: false  # should HVDC lines be modeled as `Line` or as `Link` component?
@@ -157,7 +155,7 @@ lines:
     220.: "Al/St 240/40 2-bundle 220.0"
     300.: "Al/St 240/40 3-bundle 300.0"
     380.: "Al/St 240/40 4-bundle 380.0"
-  dc_type: "DC_custom_linetype"
+  dc_type: "HVDC XLPE 1000"
   s_max_pu: 0.7
   s_nom_max: .inf
   length_factor: 1.25
