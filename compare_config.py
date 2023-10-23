@@ -2,6 +2,24 @@
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: CC0-1.0
+"""
+The script compares two yamls and outputs as csv-s a difference in columns (if
+any) and a difference for the common columns. The nested yaml structure is
+nested with `+` used to concatenate names of the parameters on different
+levels/
+
+Inputs
+------
+
+- flex_config a path to the first yaml
+- rigid_config a path to the first yaml
+
+Outputs
+-------
+
+- ``col_diff.csv`` to show a difference in the columns
+- ``config_diff.csv`` to show a difference for common columns
+"""
 
 import json
 
