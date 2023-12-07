@@ -803,14 +803,7 @@ def merge_into_network(n, aggregation_strategies=dict()):
         n.buses.loc[(n.buses.x == x) & (n.buses.y == y)]
         for x, y in zip(gdf_map["geometry"].x, gdf_map["geometry"].y)
     ]
-    btree = cKDTree(points_buses)
-    dist0, idx0 = btree.query(islands_points, k=1)
 
-    points_nearest = [points_buses[i] for i in idx0]
-
-    nearest_bus_list = [
-        n.buses.loc[(n.buses.x == x) & (n.buses.y == y)] for x, y in points_nearest
-    ]
     nearest_bus_df = pd.concat(nearest_bus_list)
 
     # each isolated node should be mapped into the closes non-isolated node
