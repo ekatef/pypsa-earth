@@ -791,8 +791,18 @@ def merge_into_network(n, aggregation_strategies=dict()):
         list(zip(n.buses.loc[i_islands].x, n.buses.loc[i_islands].y))
     )
 
-    # gdf_map = gpd.sjoin_nearest(gdf1, gdf2, how="left")
+    gds_buses = gpd.GeoSeries(map(Point, points_buses))
+    gds2_islands = gpd.GeoSeries(map(Point, islands_points))
 
+    gdf_buses = gpd.GeoDataFrame(geometry=gds_buses)
+    gdf_islands = gpd.GeoDataFrame(geometry=gds2_islands)
+
+    gdf_map = gpd.sjoin_nearest(gdf_islands, gdf_buses, how="left")
+
+    nearest_bus_list = [
+        n.buses.loc[(n.buses.x == x) & (n.buses.y == y)]
+        for x, y in zip(gdf_map["geometry"].x, gdf_map["geometry"].y)
+    ]
     btree = cKDTree(points_buses)
     dist0, idx0 = btree.query(islands_points, k=1)
 
