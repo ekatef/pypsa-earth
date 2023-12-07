@@ -792,10 +792,10 @@ def merge_into_network(n, aggregation_strategies=dict()):
     )
 
     gds_buses = gpd.GeoSeries(map(Point, points_buses))
-    gds2_islands = gpd.GeoSeries(map(Point, islands_points))
+    gds_islands = gpd.GeoSeries(map(Point, islands_points))
 
     gdf_buses = gpd.GeoDataFrame(geometry=gds_buses)
-    gdf_islands = gpd.GeoDataFrame(geometry=gds2_islands)
+    gdf_islands = gpd.GeoDataFrame(geometry=gds_islands)
 
     gdf_map = gpd.sjoin_nearest(gdf_islands, gdf_buses, how="left")
 
