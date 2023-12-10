@@ -105,7 +105,6 @@ from pypsa.clustering.spatial import (
 )
 from pypsa.io import import_components_from_dataframe, import_series_from_dataframe
 from scipy.sparse.csgraph import connected_components, dijkstra
-from scipy.spatial import cKDTree
 from shapely.geometry import Point
 
 sys.settrace
@@ -765,7 +764,28 @@ def merge_into_network(n, aggregation_strategies=dict()):
 
     n.determine_network_topology()
 
+    buses_df = n.buses.copy()[["country", "x", "y", "sub_network"]]
     # duplicated sub-networks mean that there is at least one interconnection between buses
+    buses_df["is_island"] = ~buses_df.duplicated(subset=["sub_network"], keep=False)
+
+    if buses_df.is_island.sum() == 0:
+        return n, n.buses.index.to_series()
+
+    buses_df["geometry"] = buses_df.apply(lambda row: Point(row["x"], row["y"]), axis=1)
+    gdf = gpd.GeoDataFrame(buses_df, geometry=buses_df.geometry)
+
+    islands_mapping = []
+    for cnt in gdf.country.unique():
+        cnt_gdf = gdf.groupby(["country"]).get_group(cnt)
+        isl_mapping = gpd.sjoin_nearest(
+            cnt_gdf.query("is_island"), cnt_gdf.query("not is_island"), how="left"
+        )
+        islands_mapping.append(isl_mapping)
+    # TODO check special topology cases
+    # is_island_right being NaN means that there is no non-isolated buses in the country (?)
+    res = pd.concat(islands_mapping).dropna(subset="is_island_right")
+    isolated_buses_mapping = res.index_right
+
     i_islands = n.buses[
         (~n.buses.duplicated(subset=["sub_network"], keep=False))
         & (n.buses.carrier == "AC")
@@ -847,7 +867,7 @@ def merge_into_network(n, aggregation_strategies=dict()):
     generators_mean_final = n.generators.p_nom.mean()
 
     logger.info(
-        f"Fetched {len(islands_points)} isolated buses into the network. Load attached to a single bus with discrepancies of {(100 * ((load_mean_final - load_mean_origin)/load_mean_origin)):2.1E}% and {(100 * ((generators_mean_final - generators_mean_origin)/generators_mean_origin)):2.1E}% for load and generation capacity, respectively"
+        f"Fetched {len(isolated_buses_mapping.index)} isolated buses into the network. Load attached to a single bus with discrepancies of {(100 * ((load_mean_final - load_mean_origin)/load_mean_origin)):2.1E}% and {(100 * ((generators_mean_final - generators_mean_origin)/generators_mean_origin)):2.1E}% for load and generation capacity, respectively"
     )
 
     return clustering.network, busmap
