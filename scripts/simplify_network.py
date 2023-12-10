@@ -786,56 +786,6 @@ def merge_into_network(n, aggregation_strategies=dict()):
     res = pd.concat(islands_mapping).dropna(subset="is_island_right")
     isolated_buses_mapping = res.index_right
 
-    i_islands = n.buses[
-        (~n.buses.duplicated(subset=["sub_network"], keep=False))
-        & (n.buses.carrier == "AC")
-    ].index
-
-    # TODO filtering may be applied to decide if the isolated buses should be fetched
-    # # isolated buses with load below than a specified threshold should be merged
-    # i_load_islands = n.loads_t.p_set.columns.intersection(i_islands)
-    # i_suffic_load = i_load_islands[
-    #     n.loads_t.p_set[i_load_islands].mean(axis=0) <= threshold
-    # ]
-
-    # return the original network if no isolated nodes are detected
-    if len(i_islands) == 0:
-        return n, n.buses.index.to_series()
-
-    i_connected = n.buses.loc[n.buses.carrier == "AC"].index.difference(i_islands)
-
-    points_buses = np.array(
-        list(zip(n.buses.loc[i_connected].x, n.buses.loc[i_connected].y))
-    )
-    islands_points = np.array(
-        list(zip(n.buses.loc[i_islands].x, n.buses.loc[i_islands].y))
-    )
-
-    gds_buses = gpd.GeoSeries(map(Point, points_buses))
-    gds_islands = gpd.GeoSeries(map(Point, islands_points))
-
-    gdf_buses = gpd.GeoDataFrame(geometry=gds_buses)
-    gdf_islands = gpd.GeoDataFrame(geometry=gds_islands)
-
-    gdf_map = gpd.sjoin_nearest(gdf_islands, gdf_buses, how="left")
-
-    nearest_bus_list = [
-        n.buses.loc[(n.buses.x == x) & (n.buses.y == y)]
-        for x, y in zip(gdf_map["geometry"].x, gdf_map["geometry"].y)
-    ]
-    nearest_bus_df = pd.concat(nearest_bus_list)
-
-    # each isolated node should be mapped into the closes non-isolated node
-    map_isolated_node_by_country = (
-        n.buses.assign(bus_id=n.buses.index)
-        .loc[nearest_bus_df.index]
-        .groupby("country")["bus_id"]
-        .first()
-        .to_dict()
-    )
-    isolated_buses_mapping = n.buses.loc[i_islands, "country"].replace(
-        map_isolated_node_by_country
-    )
     busmap = (
         n.buses.index.to_series()
         .replace(isolated_buses_mapping)
