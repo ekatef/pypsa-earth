@@ -81,13 +81,15 @@ if __name__ == "__main__":
     # k_edge algorithm implementation
     G = nx.Graph()
 
-    network_buses = n.buses.loc[n.buses.carrier == "AC"].index
+    network_buses = n.buses.loc[
+        (n.buses.carrier == "AC") & n.buses.country.isin(["KZ", "UZ", "TM"])
+    ].index
     G.add_nodes_from(np.unique(network_buses.values))
 
     # TODO: Currently only AC lines are read in and meshed. One need to combine
     # AC & DC lines and then move on.
     # rather there is a need to filter-out DC lines
-    network_lines = n.lines
+    network_lines = n.lines.loc[n.lines.bus0.str.contains("KZ|TM|UZ")]
     sel = network_lines.s_nom > 100  # TODO: Check, should be all selected or filtered?
     attrs = ["bus0", "bus1", "length"]
     G.add_weighted_edges_from(network_lines.loc[:, attrs].values)
