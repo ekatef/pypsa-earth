@@ -497,7 +497,7 @@ def extra_functionality(n, snapshots):
     If you want to enforce additional custom constraints, this is a good location to add them.
     The arguments ``opts`` and ``snakemake.config`` are expected to be attached to the network.
     """
-    opts = n.opts
+    opts = ""
     config = n.config
     if "BAU" in opts and n.generators.p_nom_extendable.any():
         add_BAU_constraints(n, config)
@@ -508,13 +508,13 @@ def extra_functionality(n, snapshots):
     reserve = config["electricity"].get("operational_reserve", {})
     if reserve.get("activate"):
         add_operational_reserve_margin(n, snapshots, config)
-    for o in opts:
-        if "RES" in o:
-            res_share = float(re.findall("[0-9]*\.?[0-9]+$", o)[0])
-            add_RES_constraints(n, res_share)
-    for o in opts:
-        if "EQ" in o:
-            add_EQ_constraints(n, o)
+    # for o in opts:
+    #     if "RES" in o:
+    #         res_share = float(re.findall("[0-9]*\.?[0-9]+$", o)[0])
+    #         add_RES_constraints(n, res_share)
+    # for o in opts:
+    #     if "EQ" in o:
+    #         add_EQ_constraints(n, o)
     add_battery_constraints(n)
 
 
@@ -526,6 +526,13 @@ def solve_network(n, config, solving, **kwargs):
         solving["solver_options"][set_of_options] if set_of_options else {}
     )
     kwargs["solver_name"] = solving["solver"]["name"]
+    kwargs["extra_functionality"] = extra_functionality
+    kwargs["transmission_losses"] = cf_solving.get("transmission_losses", False)
+    kwargs["linearized_unit_commitment"] = cf_solving.get(
+        "linearized_unit_commitment", False
+    )
+    kwargs["assign_all_duals"] = cf_solving.get("assign_all_duals", False)
+    kwargs["io_api"] = cf_solving.get("io_api", None)
 
     # add to network for extra_functionality
     n.config = config
