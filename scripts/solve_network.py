@@ -647,12 +647,14 @@ if __name__ == "__main__":
         n.export_to_netcdf(snakemake.output[0])
 
     n = pypsa.Network(snakemake.input[0])
-    if snakemake.params.augmented_line_connection.get("add_to_snakefile"):
-        n.lines.loc[n.lines.index.str.contains("new"), "s_nom_min"] = (
-            snakemake.params.augmented_line_connection.get("min_expansion")
-        )
-    n = prepare_network(n, solve_opts)
-
+    # needed to get `n.model` property
+    n.optimize.create_model()
+    # TODO Double-check handling the augmented case
+    # if snakemake.params.augmented_line_connection.get("add_to_snakefile"):
+    #    n.lines.loc[
+    #        n.lines.index.str.contains("new"), "s_nom_min"
+    #    ] = snakemake.params.augmented_line_connection.get("min_expansion")
+    n = prepare_network(n, solve_opts, config=solve_opts)
     n = solve_network(
         n,
         config=snakemake.config,
