@@ -620,28 +620,6 @@ if __name__ == "__main__":
     opts = snakemake.wildcards.opts.split("-")
     solve_opts = snakemake.config["solving"]["options"]
 
-    fn = getattr(snakemake.log, "memory", None)
-    with memory_logger(filename=fn, interval=30.0) as mem:
-        n = pypsa.Network(snakemake.input[0])
-        # TODO Double-check handling the augmented case
-        # if snakemake.config["augmented_line_connection"].get("add_to_snakefile"):
-        #     n.lines.loc[
-        #         n.lines.index.str.contains("new"), "s_nom_min"
-        #     ] = snakemake.config["augmented_line_connection"].get("min_expansion")
-        n = prepare_network(n, solve_opts)
-        n = solve_network(
-            n,
-            # TODO The initial version looks clearer...
-            # config=snakemake.config,
-            # opts=opts,
-            snakemake.config,
-            opts,
-            solver_dir=tmpdir,
-            solver_logfile=snakemake.log.solver,
-        )
-        n.meta = dict(snakemake.config, **dict(wildcards=dict(snakemake.wildcards)))
-        n.export_to_netcdf(snakemake.output[0])
-
     n = pypsa.Network(snakemake.input[0])
     # needed to get `n.model` property
     n.optimize.create_model()
