@@ -32,6 +32,7 @@ dag.svg
 gurobi.log
 gadm_shapes.geojson
 doc/*.vscode/settings.json
+pixi.lock
 
 # Untracked folders (and files within)
 bak
@@ -56,10 +57,12 @@ doc/_build
 sample_pypsa_eur
 test/tmp/
 playground/
+.pixi/
 
 # Specific configuration files
 configs/scenarios/config.*.yaml
 !configs/scenarios/config.NG.yaml
+pixi.toml
 
 # VS Code-related files
 .vscode
