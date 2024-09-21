@@ -1,0 +1,73 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+[project]
+channels = ["conda-forge", "bioconda", "gurobi"]
+description = "PyPSA-Earth environment specification"
+name = "pypsa-earth-pixi"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[system-requirements]
+macos = "12.7.6"
+
+[tasks]
+
+[dependencies]
+python = ">=3.8"
+pip = "*"
+pypsa = ">=0.24,<0.25"
+dask = "*"
+powerplantmatching = "*"
+earth-osm = ">=2.1"
+atlite = "*"
+xlrd = "*"
+openpyxl = "*"
+seaborn = "*"
+snakemake-minimal = "<8"
+memory_profiler = "*"
+"ruamel.yaml" = "<=0.17.26"
+pytables = "*"
+lxml = "*"
+numpy = "*"
+pandas = "*"
+geopandas = ">=0.11.0,<=0.14.3"
+fiona = "<1.10.0"
+xarray = ">=2023.11.0,<2023.12.0"
+netcdf4 = "*"
+networkx = "*"
+scipy = "*"
+pydoe2 = "*"
+shapely = "!=2.0.4"
+pre-commit = "*"
+pyomo = "*"
+matplotlib = "<=3.5.2"
+reverse-geocode = "*"
+country_converter = "*"
+pyogrio = "*"
+numba = "*"
+py7zr = "*"
+ipython = "*"
+ipykernel = "*"
+jupyterlab = "*"
+cartopy = "*"
+descartes = "*"
+rasterio = "!=1.2.10"
+rioxarray = "*"
+geoviews = "*"
+hvplot = "*"
+graphviz = "*"
+contextily = "*"
+geopy = "*"
+tqdm = "*"
+pytz = "*"
+glpk = "*"
+ipopt = "*"
+gurobi = "*"
+
+[pypi-dependencies]
+powerplantmatching = ">=0.5.19"
+tsam = ">=1.1.0"
+chaospy = "*"
+fake-useragent = "*"
