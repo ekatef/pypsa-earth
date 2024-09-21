@@ -33,6 +33,7 @@ gurobi.log
 gadm_shapes.geojson
 doc/*.vscode/settings.json
 pixi.lock
+*.DS_Store
 
 # Untracked folders (and files within)
 bak
