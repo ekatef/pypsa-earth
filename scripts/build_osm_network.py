@@ -15,7 +15,6 @@ from _helpers import (
     create_logger,
     read_geojson,
     read_osm_config,
-    sets_path_to_root,
     to_csv_nafix,
 )
 from shapely.geometry import LineString, Point
@@ -898,23 +897,14 @@ if __name__ == "__main__":
     if "snakemake" not in globals():
         from _helpers import mock_snakemake
 
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         snakemake = mock_snakemake("build_osm_network")
+
     configure_logging(snakemake)
-
-    # load default crs
-    geo_crs = snakemake.params.crs["geo_crs"]
-    distance_crs = snakemake.params.crs["distance_crs"]
-    force_ac = snakemake.params.build_osm_network.get("force_ac", False)
-    build_osm_network = snakemake.params.build_osm_network
-    countries = snakemake.params.countries
-
-    sets_path_to_root("pypsa-earth")
 
     # Keep only a predefined set of columns, as otherwise conflicts are possible
     # e.g. the columns which names starts with "bus" are mixed up with
     # the third-bus specification when executing additional_linkports()
-    lines_cols_standard = [
+    LINES_COLUMNS = [
         "line_id",
         "circuits",
         "tag_type",
@@ -931,6 +921,13 @@ if __name__ == "__main__":
         "bounds",
     ]
 
+    # load default crs
+    geo_crs = snakemake.params.crs["geo_crs"]
+    distance_crs = snakemake.params.crs["distance_crs"]
+    force_ac = snakemake.params.build_osm_network.get("force_ac", False)
+    build_osm_network = snakemake.params.build_osm_network
+    countries = snakemake.params.countries
+
     built_network(
         snakemake.input,
         snakemake.output,
@@ -938,6 +935,6 @@ if __name__ == "__main__":
         countries,
         geo_crs,
         distance_crs,
-        lines_cols_standard=lines_cols_standard,
+        lines_cols_standard=LINES_COLUMNS,
         force_ac=force_ac,
     )
