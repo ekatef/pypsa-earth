@@ -484,7 +484,7 @@ rule build_powerplants:
     input:
         base_network="networks/" + RDIR + "base.nc",
         pm_config="configs/powerplantmatching_config.yaml",
-        custom_powerplants="data/custom_powerplants.csv",
+        custom_powerplants="data/" + RDIR + "custom_powerplants.csv",
         osm_powerplants="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
         #gadm_shapes="resources/" + RDIR + "shapes/MAR2.geojson",
         #using this line instead of the following will test updated gadm shapes for MA.
