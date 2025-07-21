@@ -105,7 +105,7 @@ jobs:
     - name: Extract the objective value from the logs
       id: branch_objectives
       run: |
-        b=$(grep -Po "(?<=INFO:__main__:Objective function: ).*" branch_logs/logs/* || true)
+        b=$(grep -Po "(?<=INFO:__main__:Objective function: ).*" branch_logs/logs/solve_network/* || true)
         echo "branch=$b" >> "$GITHUB_OUTPUT"
 
     - name: Compare objectives
