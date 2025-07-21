@@ -92,9 +92,26 @@ jobs:
           results
         retention-days: 3
 
-        # - name: Test plotting and summaries
-        #   run: |
-        #     snakemake --cores all plot_all_p_nom
-        #     snakemake --cores all plot_all_summaries
-        #     snakemake --cores all make_all_summaries
-        #     rm -rf resources/*.nc resources/*.geojson resources/*.h5 networks results
+    - name: Download feature logs
+      uses: actions/download-artifact@v4
+      with:
+        name: results-${{ matrix.os }}
+        path: branch_logs
+
+    - name: Extract the objective value from the logs
+      id: branch_objectives
+      run: |
+        b=$(grep -Po "(?<=INFO:__main__:Objective function: ).*" branch_logs/logs/* || true)
+        echo "branch=$b" >> "$GITHUB_OUTPUT"
+
+    - name: Compare objectives
+      run: |
+        echo "Branch objective: ${{ steps.branch_objectives.outputs.branch }}"
+
+
+    # - name: Test plotting and summaries
+    #   run: |
+    #     snakemake --cores all plot_all_p_nom
+    #     snakemake --cores all plot_all_summaries
+    #     snakemake --cores all make_all_summaries
+    #     rm -rf resources/*.nc resources/*.geojson resources/*.h5 networks results
