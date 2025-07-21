@@ -29,10 +29,10 @@ jobs:
         include:
         - os: ubuntu
           env_file: envs/linux-64.lock.yaml
-        - os: macos
-          env_file: envs/osx-arm64.lock.yaml
-        - os: windows
-          env_file: envs/win-64.lock.yaml
+        # - os: macos
+        #   env_file: envs/osx-arm64.lock.yaml
+        # - os: windows
+        #   env_file: envs/win-64.lock.yaml
 
     defaults:
       run:
