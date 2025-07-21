@@ -21,8 +21,8 @@ env:
 
 jobs:
   run-tests:
-    # if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.ref == 'refs/heads/add_objective_comparison' || github.event_name == 'workflow_dispatch' }}
+    # if: ${{ github.event_name == 'workflow_dispatch' }}
     name: OS
     runs-on: ${{ matrix.os }}-latest
     strategy:
