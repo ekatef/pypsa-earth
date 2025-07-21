@@ -3,31 +3,33 @@ name: Test workflows
 on:
   push:
     branches:
-    - main
+    # - main
     - add_objective_comparison
-  pull_request:
-    branches:
-    - main
-  schedule:
-  - cron: "0 5 * * TUE"
+  # pull_request:
+  #   branches:
+  #   - main
+  # schedule:
+  # - cron: "0 5 * * TUE"
 
-# Cancel any in-progress runs when a new run is triggered
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# # Cancel any in-progress runs when a new run is triggered
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 env:
   BASE_ENV: envs/environment.yaml
 
 jobs:
   run-tests:
-    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
+    # if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: OS
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos, windows]
+        # os: [ubuntu, macos, windows]
+        os: [ubuntu]
         include:
         - os: ubuntu
           env_file: envs/linux-64.lock.yaml
