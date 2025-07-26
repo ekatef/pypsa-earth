@@ -3,10 +3,10 @@ name: Test workflows
 on:
   push:
     branches:
-    - main
+    - GEBCO
   pull_request:
     branches:
-    - main
+    - GEBCO
   schedule:
   - cron: "0 5 * * TUE"
 
