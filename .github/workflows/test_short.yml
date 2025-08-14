@@ -1,10 +1,11 @@
 name: Test workflows short
 
 on:
-  push:
-    branches:
-    # - main
-    - add_objective_comparison
+  # push:
+  #   branches:
+  #   # - main
+  #   - add_objective_comparison
+  workflow_dispatch:
   # pull_request:
   #   branches:
   #   - main
@@ -21,8 +22,8 @@ env:
 
 jobs:
   run-tests:
-    if: ${{ github.ref == 'refs/heads/add_objective_comparison' || github.event_name == 'workflow_dispatch' }}
-    # if: ${{ github.event_name == 'workflow_dispatch' }}
+    # if: ${{ github.ref == 'refs/heads/add_objective_comparison' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: OS
     runs-on: ${{ matrix.os }}-latest
     strategy:
