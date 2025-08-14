@@ -5,6 +5,7 @@ on:
     workflows: ["Test workflows short"]
     types:
     - completed
+  workflow_dispatch:
 
 jobs:
   validate-ci:
