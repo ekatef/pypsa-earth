@@ -94,4 +94,7 @@ jobs:
           logs
           .snakemake/log
           results
-        retention-days: 3
+      # with:
+      #   name: model-results
+      #   path: test_output/
+      # retention-days: 3
