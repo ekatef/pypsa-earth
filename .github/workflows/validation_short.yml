@@ -1,0 +1,64 @@
+name: Validation Reporting
+
+on:
+  workflow_run:
+    workflows: ["CI - Run Models"]
+    types:
+    - completed
+
+jobs:
+  validate-ci:
+    name: OS
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # os: [ubuntu, macos, windows]
+        os: [ubuntu]
+        # include:
+        # - os: ubuntu
+        #   env_file: envs/linux-64.lock.yaml
+        # - os: macos
+        #   env_file: envs/osx-arm64.lock.yaml
+        # - os: windows
+        #   env_file: envs/win-64.lock.yaml
+
+    steps:
+    - name: Download model output artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: model-results
+        path: validation_outputs/
+
+    - name: Download feature logs
+      uses: actions/download-artifact@v4
+      with:
+        name: results-${{ matrix.os }}
+        path: branch_logs
+
+    - name: Extract the objective from the logs
+      id: branch_objectives
+      run: |
+        b=$(grep -Po "(?<=INFO:__main__:Objective function: ).*" branch_logs/logs/solve_network/* || true)
+        echo "branch=$b" >> "$GITHUB_OUTPUT"
+       # run: |
+        #   echo "## 🧮 Model Results Summary" >> $GITHUB_STEP_SUMMARY
+        #   for f in model_outputs/*.json; do
+        #     if [ -f "$f" ]; then
+        #       name=$(jq -r '.model_name' "$f")
+        #       status=$(jq -r '.status' "$f")
+        #       obj=$(jq -r '.objective_value' "$f")
+        #       time=$(jq -r '.solve_time' "$f")
+
+        #       echo "📦 $name"
+        #       echo "  ✅ Status: $status"
+        #       echo "  🎯 Objective: $obj"
+        #       echo "  ⏱️ Time: $time seconds"
+
+        #       echo "### 📦 $name" >> $GITHUB_STEP_SUMMARY
+        #       echo "- ✅ Status: $status" >> $GITHUB_STEP_SUMMARY
+        #       echo "- 🎯 Objective: $obj" >> $GITHUB_STEP_SUMMARY
+        #       echo "- ⏱️ Time: $time seconds" >> $GITHUB_STEP_SUMMARY
+        #       echo "" >> $GITHUB_STEP_SUMMARY
+        #     fi
+        #   done
