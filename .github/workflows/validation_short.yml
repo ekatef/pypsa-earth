@@ -2,12 +2,13 @@ name: Validation Reporting
 
 on:
   workflow_run:
-    workflows: ["CI - Run Models"]
+    workflows: ["Test workflows short"]
     types:
     - completed
 
 jobs:
   validate-ci:
+    if: ${{ github.ref == 'refs/heads/add_objective_comparison' || github.event_name == 'workflow_dispatch' }}
     name: OS
     runs-on: ${{ matrix.os }}-latest
     strategy:
