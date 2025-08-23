@@ -1,11 +1,14 @@
-name: Test workflows
+name: Test workflows short
 
 on:
+  push:
+    branches:
+    # - main
+    - add_objective_comparison
+  pull_request:
+    branches:
+    - main
   workflow_dispatch:
-  # push:
-  #   branches:
-  #   # - main
-  #   - add_objective_comparison
 
 # # Cancel any in-progress runs when a new run is triggered
 # concurrency:
@@ -39,7 +42,7 @@ jobs:
         shell: bash -l {0}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
 
     - name: Use base env file if it was changed
       run: |

@@ -1,11 +1,15 @@
-name: Test workflows
+name: Test workflows2
 
 on:
-  workflow_dispatch:
-  # push:
+  push:
+    branches:
+    # - main
+    - add_objective_comparison
+  # pull_request:
   #   branches:
-  #   # - main
-  #   - add_objective_comparison
+  #   - main
+  # schedule:
+  # - cron: "0 5 * * TUE"
 
 # # Cancel any in-progress runs when a new run is triggered
 # concurrency:
@@ -39,7 +43,7 @@ jobs:
         shell: bash -l {0}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
 
     - name: Use base env file if it was changed
       run: |
@@ -90,7 +94,28 @@ jobs:
           logs
           .snakemake/log
           results
-      # with:
-      #   name: model-results
-      #   path: test_output/
-      # retention-days: 3
+        retention-days: 3
+
+    - name: Download feature logs
+      uses: actions/download-artifact@v4
+      with:
+        name: results-${{ matrix.os }}
+        path: branch_logs
+
+    - name: Extract the objective value from the logs
+      id: branch_objectives
+      run: |
+        b=$(grep -Po "(?<=INFO:__main__:Objective function: ).*" branch_logs/logs/solve_network/* || true)
+        echo "branch=$b" >> "$GITHUB_OUTPUT"
+
+    - name: Compare objectives
+      run: |
+        echo "Branch objective: ${{ steps.branch_objectives.outputs.branch }}"
+
+
+    # - name: Test plotting and summaries
+    #   run: |
+    #     snakemake --cores all plot_all_p_nom
+    #     snakemake --cores all plot_all_summaries
+    #     snakemake --cores all make_all_summaries
+    #     rm -rf resources/*.nc resources/*.geojson resources/*.h5 networks results
