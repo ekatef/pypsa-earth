@@ -9,6 +9,7 @@ on:
     - main
   schedule:
   - cron: "0 5 * * TUE"
+  workflow_dispatch:
 
 # Cancel any in-progress runs when a new run is triggered
 concurrency:
