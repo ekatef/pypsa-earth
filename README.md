@@ -89,20 +89,7 @@ There are multiple ways to get involved and learn more about our work:
    ```bash
    .../some/path/without/spaces % git clone https://github.com/pypsa-meets-earth/pypsa-earth.git
    ```
-2. The python package requirements are curated in the `envs/environment.yaml` file.
-   The environment can be installed using:
-
-   ```bash
-   .../pypsa-earth % conda env create -f envs/environment.yaml
-   ```
-
-   If the above takes longer than 30 min, you might want to try mamba for faster installation:
-
-   ```bash
-   (base) conda install -c conda-forge mamba
-
-   .../pypsa-earth % mamba env create -f envs/environment.yaml
-   ```
+2. The environment should installed following the guidline from [Install Dependencies](https://pypsa-earth.readthedocs.io/en/latest/installation.html#install-dependencies) section in read-the-docs.
 
 3. (optional) In step 2, three solvers are installed: HiGHs, glpk and gurobi. HiGHs is the recommended open-source solver. Gurobi is generally faster, but requires a license for full functionality, which is [freely available to academics](https://www.gurobi.com/features/academic-named-user-license/) (see instructions website).
 
