@@ -185,7 +185,10 @@ def load_demand_csv(path):
     return gegis_load
 
 
-def compose_gegis_load(load_paths):
+def compose_gegis_load(
+    load_paths: str| list[str],
+    countries: str | list[str],
+) -> pd.DataFrame:
     """
     Read and merge nc files located by load_paths
     Parameters
@@ -212,8 +215,11 @@ def compose_gegis_load(load_paths):
 
 
 def add_transform_iso3(
-    df, source="Entity code", target="name_short", output="region_name"
-):
+    df: pd.DataFrame,
+    source: str = "Entity code",
+    target: str = "name_short",
+    output: str = "region_name",
+) -> pd.DataFrame:
     """
     Transform a column containing ISO3 codes according to the target format
     and add as a new column
@@ -231,7 +237,8 @@ def add_transform_iso3(
     return df
 
 
-def read_demcast_load(load_paths, weather_year, countries):
+def read_demcast_load(load_paths: str, weather_year: int,
+    countries: str | list[str]) -> pd.DataFrame:
     """
     Load electricity demand data from DemandCast dataset 
     for selected countries and a given weather year.
