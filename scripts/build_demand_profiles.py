@@ -430,7 +430,7 @@ if __name__ == "__main__":
     weather_year = snakemake.params.load_options["weather_year"]
 
     if load_source == "ssp":
-        warnings.warn(
+        logger.warning(
             f"Configuration option 'load_options::ssp' is deprecated. Use 'load_options::source' instead"
         )
 
