@@ -186,7 +186,7 @@ def load_demand_csv(path):
 
 
 def compose_gegis_load(
-    load_paths: str| list[str],
+    load_paths: str | list[str],
     countries: str | list[str],
 ) -> pd.DataFrame:
     """
@@ -265,10 +265,11 @@ def add_transform_iso3(
     return df
 
 
-def read_demcast_load(load_paths: str, weather_year: int,
-    countries: str | list[str]) -> pd.DataFrame:
+def read_demcast_load(
+    load_paths: str, weather_year: int, countries: str | list[str]
+) -> pd.DataFrame:
     """
-    Load electricity demand data from DemandCast dataset 
+    Load electricity demand data from DemandCast dataset
     for selected countries and a given weather year.
 
     Parameters
