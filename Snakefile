@@ -64,7 +64,7 @@ SDIR = config["summary_dir"].strip("/") + f"/{SECDIR}"
 RESDIR = config["results_dir"].strip("/") + f"/{SECDIR}"
 
 el_load_source = config["load_options"].get("source", "gegis")
-if (el_load_source == "ssp") | (el_load_source == "gegis"):
+if (el_load_source == "ssp") or (el_load_source == "gegis"):
     load_data_paths = get_load_paths_gegis("data", config)
 else:
     load_data_paths = "data/demand/forecasts_on_historical_period.parquet"
