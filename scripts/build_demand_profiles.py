@@ -233,7 +233,29 @@ def add_transform_iso3(
 
 def read_demcast_load(load_paths, weather_year, countries):
     """
-    region_code;time;region_name;Electricity demand
+    Load electricity demand data from DemandCast dataset 
+    for selected countries and a given weather year.
+
+    Parameters
+    ----------
+    load_paths : str
+        Path to the parquet file with Demcast demand data.
+    weather_year : int
+        Weather year for which demand profile should be extracted.
+    countries : str or list
+        Country name or list of country names to subset the demand dataset.
+
+    Returns
+    -------
+    demcast_load : pd.DataFrame
+        Electricity load with ``time`` index, and containing the columns
+        ``region_code``, ``region_name``, and ``Electricity demand``.
+
+    References
+    ----------
+    Kevin Steijn, Vamsi Priya Goli, Enrico Antonini (2025)
+    "DemandCast: Global hourly electricity demand forecasting"
+    https://arxiv.org/abs/2510.08000
     """
     demcast_full_load = pd.read_parquet(load_paths)
 
