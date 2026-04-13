@@ -190,11 +190,22 @@ def compose_gegis_load(
     countries: str | list[str],
 ) -> pd.DataFrame:
     """
-    Read and merge nc files located by load_paths
+    Read and merge GEGIS electricity demand data from multiple input files.
+
     Parameters
     ----------
-    load_paths: paths of the load files
+    load_paths : str or list[str]
+        Paths to demand input files.
+    countries : str or list[str]
+        Region codes used to look for the demand data.
+
+    Returns
+    -------
+    gegis_load : pd.DataFrame
+        Electricity load with ``time`` index, and containing the columns
+        ``region_code``, ``region_name``, and ``Electricity demand``.
     """
+
     gegis_load_list = []
 
     for path in load_paths:
@@ -221,8 +232,25 @@ def add_transform_iso3(
     output: str = "region_name",
 ) -> pd.DataFrame:
     """
-    Transform a column containing ISO3 codes according to the target format
-    and add as a new column
+    Transform a column containing ISO3 codes into another country-code or country-name
+    format and store the result in a new column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input DataFrame.
+    source : str
+        Name of the column in ``df`` containing country names.
+    target : str
+        Target format as expected by ``cc.convert``,e.g. ``"name_short"`` or ``"ISO2"``.
+    output : str
+        Name of a new output column of ``df`` to keep converted region names.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        DataFrame with an additional column containing the converted region names.
+
     """
     # cc.convert is pretty slow when being applied over the whole column directly
     cats = df[source].astype("category").cat.categories
