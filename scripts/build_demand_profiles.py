@@ -372,7 +372,7 @@ def build_demand_profiles(
     substation_lv_i = n.buses.index[n.buses["substation_lv"]]
     regions = gpd.read_file(regions).set_index("name").reindex(substation_lv_i)
 
-    if (load_source == "gegis") | (load_source == "ssp"):
+    if (load_source == "gegis") or (load_source == "ssp"):
         gegis_load = compose_gegis_load(load_paths=load_paths)
         el_load = gegis_load
     else:
