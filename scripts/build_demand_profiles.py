@@ -296,8 +296,8 @@ def read_demcast_load(load_paths: str, weather_year: int,
 
     demcast_full_load["time"] = pd.to_datetime(demcast_full_load["Time (UTC)"])
     demcast_load = demcast_full_load[demcast_full_load["time"].dt.year == weather_year]
-    demcast_load.rename(
-        columns={"Forecast load (MW)": "Electricity demand"}, inplace=True
+    demcast_load = demcast_load.rename(
+        columns={"Forecast load (MW)": "Electricity demand"}
     )
 
     countries_iso3 = cc.convert(names=countries, to="ISO3")
