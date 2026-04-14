@@ -187,7 +187,7 @@ databundles:
     - data/hydrobasins/hybas_world.shp
 
   # DemandCast dataset for electricity demand
-  el_demand_demandcast:
+  demandcast_full:
     countries: [Earth]
     tutorial: false
     category: el_demand
@@ -198,7 +198,7 @@ databundles:
     output:
     - data/demand/forecasts_on_historical_period.parquet
 
-  el_demand_demandcast:
+  demandcast_tutorial:
     countries: [Earth]
     tutorial: true
     category: el_demand
@@ -208,7 +208,7 @@ databundles:
       direct: "https://zenodo.org/records/18374352/files/forecasts_on_historical_period.parquet"
     unzip: false
     output:
-    - data/demand/forecasts_on_historical_period.parquet    
+    - data/demand/forecasts_on_historical_period.parquet
 
   # IRENA energy statistics dataset including generation, installed capacity, heat production, and related indicators.
   # Used in build_renewable_profiles.py to derive hydropower generation potentials.
