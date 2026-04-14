@@ -69,11 +69,6 @@ if (el_load_source == "ssp") or (el_load_source == "gegis"):
 else:
     load_data_paths = "data/demand/forecasts_on_historical_period.parquet"
 
-if config["enable"].get("retrieve_cost_data", True):
-    COSTS = "resources/" + RDIR + f"costs_{config['costs']['year']}.csv"
-else:
-    COSTS = "data/costs.csv"
-
 ATLITE_NPROCESSES = config["atlite"].get("nprocesses", 4)
 
 
