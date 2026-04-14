@@ -64,6 +64,7 @@ from shapely.validation import make_valid
 
 logger = create_logger(__name__)
 
+# Needed for messenging to facilitate back-ward compartibiilty
 DEMCAST_URL = (
     "https://zenodo.org/records/18374352/files/forecasts_on_historical_period.parquet"
 )
@@ -381,9 +382,11 @@ def build_demand_profiles(
         load_paths = "data/demand/forecasts_on_historical_period.parquet"
 
         if not os.path.exists(load_paths):
-            url = DEMCAST_URL
-            logger.info(f"Downloading DemandCast data into {load_paths}")
-            progress_retrieve(url, load_paths)
+            logger.error(f"DemandCast dataset is not available via {load_paths}. Please download it from {DEMCAST_URL}") 
+            raise Exception(
+                f"DemandCast dataset is not available via {load_paths}."
+                " Please download it from {DEMCAST_URL}"
+            )
 
         demcast_load = read_demcast_load(
             load_paths=load_paths,
