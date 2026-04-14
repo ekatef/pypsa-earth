@@ -374,7 +374,7 @@ def build_demand_profiles(
     regions = gpd.read_file(regions).set_index("name").reindex(substation_lv_i)
 
     if (load_source == "gegis") or (load_source == "ssp"):
-        gegis_load = compose_gegis_load(load_paths=load_paths)
+        gegis_load = compose_gegis_load(load_paths=load_paths, countries=countries)
         el_load = gegis_load
     else:
         # TODO replace hard-coding
