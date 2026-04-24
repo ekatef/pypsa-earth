@@ -205,7 +205,7 @@ databundles:
     destination: "data/demand"
     urls:
       # TODO Replace with a link to a shorter version for testing
-      direct: "https://zenodo.org/records/18374352/files/forecasts_on_historical_period.parquet"
+      direct: "https://sandbox.zenodo.org/records/493116/files/forecasts_on_historical_period.parquet"
     unzip: false
     output:
     - data/demand/forecasts_on_historical_period.parquet
