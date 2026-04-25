@@ -539,6 +539,7 @@ rule process_cost_data:
     script:
         "scripts/process_cost_data.py"
 
+
 def get_load_input(load_config: dict) -> str:
     """
     Get path to electricity load file from the config
@@ -553,7 +554,8 @@ def get_load_input(load_config: dict) -> str:
     else:
         load_path = "data/demand/forecasts_on_historical_period.parquet"
 
-    return load_path    
+    return load_path
+
 
 rule build_demand_profiles:
     params:
