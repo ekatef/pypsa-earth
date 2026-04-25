@@ -204,7 +204,7 @@ databundles:
     category: el_demand
     destination: "data/demand"
     urls:
-      # TODO Replace with a link to a shorter version for testing
+      # TODO Cross-check with DemandCast team and move to full-scale Zenodo
       direct: "https://sandbox.zenodo.org/records/493116/files/forecasts_on_historical_period.parquet"
     unzip: false
     output:
