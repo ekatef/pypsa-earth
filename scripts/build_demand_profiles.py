@@ -379,11 +379,13 @@ def build_demand_profiles(
     else:
         if not os.path.exists(load_paths):
             logger.error(
-                f"DemandCast dataset is not available via {load_paths}. Please download it from {DEMCAST_URL}"
+                f"DemandCast dataset is not available via {load_paths}."
+                " Please download it from the source. "
+                "The specification available under `demandcast_full`" 
+                "in configs/bundle_config.yaml"
             )
             raise Exception(
-                f"DemandCast dataset is not available via {load_paths}."
-                " Please download it from {DEMCAST_URL}"
+                f"Stopping execution since no demand data available"
             )
 
         demcast_load = read_demcast_load(
