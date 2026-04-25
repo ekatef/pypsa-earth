@@ -174,7 +174,7 @@ base_network:
 # Details and comparison are provided in
 # https://github.com/pypsa-meets-earth/pypsa-earth/issues/1724
 load_options:
-  source: "demcast" # "demcast" or "gegis"
+  source: "gegis" # "demcast" or "gegis"
   weather_year: 2013 # Weather year of the load profile
   prediction_year: 2030 # Valid only if "gegis" used as a source
   scale: 1 # scales all load time-series, i.e. 2 = doubles load
