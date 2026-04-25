@@ -557,6 +557,7 @@ def get_load_input(load_config: dict) -> str:
     return load_path
 
 
+# TODO Add a sanity check for formal of the custom load file
 rule build_demand_profiles:
     params:
         snapshots=config["snapshots"],
