@@ -75,6 +75,10 @@ from _helpers import (
     sanitize_locations,
 )
 from add_electricity import update_transmission_costs
+from utility_custom_features import (
+    add_interconnectors,
+    load_interconnector_data,
+)
 
 idx = pd.IndexSlice
 
@@ -452,6 +456,33 @@ if __name__ == "__main__":
 
     sanitize_carriers(n, snakemake.config)
     sanitize_locations(n)
+
+    if snakemake.config["interconnectors"]["enable"]:
+        snapshot_years = n.snapshots.year.unique()
+        if len(snapshot_years) > 1:
+            logger.warning(
+                f"Snapshots span multiple years {sorted(snapshot_years)}; "
+                f"using {snapshot_years.min()} for trade data selection."
+            )
+        snapshot_year = int(snapshot_years.min())
+        power_pool_countries, power_pool_links, substations = load_interconnector_data(
+            snakemake.input.power_pool_countries,
+            snakemake.input.power_pool_links,
+            snakemake.input.substations,
+            year=snapshot_year,
+        )
+
+        n = add_interconnectors(
+            n,
+            power_pool_countries,
+            power_pool_links,
+            substations,
+            distance_crs=snakemake.config["crs"]["distance_crs"],
+        )
+    else:
+        logger.info(
+            "Interconnectors are not added to the network as per config settings."
+        )    
 
     n.meta = dict(snakemake.config, **dict(wildcards=dict(snakemake.wildcards)))
     n.export_to_netcdf(snakemake.output[0])
