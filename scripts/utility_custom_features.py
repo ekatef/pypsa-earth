@@ -14,6 +14,7 @@ from shapely.ops import transform as shapely_transform
 
 logger = logging.getLogger(__name__)
 
+
 def annual_gwh_to_average_mw(energy_gwh, hours_per_year=8760):
     """Convert annual energy in GWh to average power in MW."""
     return energy_gwh * 1000 / hours_per_year
@@ -73,7 +74,9 @@ def add_foreign_buses(n, power_pool_countries):
     return n
 
 
-def add_cross_border_links(n, power_pool_links, substation_dict, distance_crs, country="PT"):
+def add_cross_border_links(
+    n, power_pool_links, substation_dict, distance_crs, country="PT"
+):
     """Add cross-border links to the network."""
     for _, row in power_pool_links.iterrows():
         name = row["name"]

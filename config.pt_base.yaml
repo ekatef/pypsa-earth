@@ -64,11 +64,11 @@ atlite:
   default: pt-2023-era5
 
 validation:
-  interconnectors: 
-    enable: false  
+  interconnectors:
+    enable: false
 
 solving:
   # ------------------- Solver -------------------
   solver:
     name: highs
-    options: highs-default  
+    options: highs-default

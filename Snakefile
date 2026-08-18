@@ -919,7 +919,7 @@ rule prepare_network:
         tech_costs="resources/" + RDIR + f"costs_{config['costs']['year']}_elec.csv",
         power_pool_countries="data/imports_exports_ts.csv",
         power_pool_links="data/interconnectors.csv",
-        substations="data/interconnectors_substations.csv",        
+        substations="data/interconnectors_substations.csv",
     output:
         "networks/" + RDIR + "elec_s{simpl}_{clusters}_ec_l{ll}_{opts}.nc",
     log:
