@@ -1,0 +1,74 @@
+# Write down config entries differing from config.default.yaml
+
+countries: ["PT"]
+
+run:
+  name: "PT_test" # optional; stores intermediate files in a subfolder (e.g. "KZ" → resources/KZ/, results/KZ/); empty = no subfolder
+  sector_name: "PT_test" # optional; sector-coupling only — subfolder under results_dir/
+  shared_cutouts: true # true: cutouts/ shared across runs; false: cutouts/{name}/ per run
+  allow_scenario_failure: false # If True, the workflow will continue even if a scenario in run_scenario fails
+
+snapshots:
+  start: "2023-01-01"
+  end: "2024-01-01"
+  inclusive: "left" # end is not inclusive
+
+enable:
+  # ----------------- Retrieving data -----------------
+  retrieve_databundle: false # recommended for first run
+  download_osm_data: true # download OpenStreetMap data for the countries specified above
+  retrieve_cutout: false # retrieves the bundled 2013 cutout (cutout-2013-era5); changing load_options.weather_year (default: 2013) requires retrieve_cutout:false and build_cutout: true.
+  retrieve_cost_data: true # false: use existing data/costs.csv
+  retrieve_databundle_sector: false
+  download_global_buildings: false # download GlobalMLBuildingFootprints data for the countries specified above
+  # ----------------- Building locally -----------------
+  build_cutout: false # requires CDS API key (see https://cds.climate.copernicus.eu/how-to-api); uses snapshots and countries
+  build_natura_raster: false
+  # ----------------- Advanced -----------------
+  progress_bar: true
+  custom_busmap: false # optional override for cluster_network busmap
+
+# build_shape_options:
+#   nprocesses: 3 # number of processes to be used in build_shapes
+#   worldpop_method: false # "standard" pulls from web 1kmx1km raster, "api" pulls from API 100mx100m raster,
+#   # false (not "false") no pop addition to shape which is useful when generating only cutout
+#   gdp_method: false # "standard" pulls from web 1x1km raster, false (not "false") no gdp addition to shape which useful when generating only cutout
+
+electricity:
+  # ----------------- Electricity generation -------------------
+  extendable_carriers:
+    Generator: [] # Remove 'offwind-ac' and 'offwind-dc' for landlocked countries (e.g., Jordan, Austria, Switzerland)
+    StorageUnit: [] # battery, H2, li-ion, vanadium, lfp, lair, pair, iron-air and more
+    Store: [] # li-ion, vanadium, lfp, lair, pair, iron-air and more
+    # See all available options for Store and StorageUnit in https://pypsa-earth.readthedocs.io/en/latest/user-guide/configuration/#storage-technologies
+    Link: [] # H2 pipeline
+
+load_options:
+  source: "demcast" # "gegis" (scenario-based: 2011, 2013, 2018 available) or "demcast" (hourly 2000–2024 available): view [issue #1724](https://github.com/pypsa-meets-earth/pypsa-earth/issues/1724) for more details
+  weather_year: 2023 # Weather year of the load profile
+  prediction_year: 2030 # Valid only if "gegis" used as a source
+  scale: 1 # scales all load time-series, i.e. 2 = doubles load
+
+atlite:
+  nprocesses: 4
+  cutouts:
+    pt-2023-era5:
+      module: era5
+      dx: 0.3 # cutout resolution
+      dy: 0.3 # cutout resolution
+      # The cutout time is automatically set by the snapshot range. See `snapshot:` option above and 'build_cutout.py'.
+      # time: ["2013-01-01", "2014-01-01"]  # to manually specify a different weather year (~70 years available)
+      # The cutout spatial extent [x,y] is automatically set by country selection. See `countries:` option above and 'build_cutout.py'.
+      # x: [-12., 35.]  # set cutout range manual, instead of automatic by boundaries of country
+      # y: [33., 72]    # manual set cutout range
+  default: pt-2023-era5
+
+validation:
+  interconnectors: 
+    enable: false  
+
+solving:
+  # ------------------- Solver -------------------
+  solver:
+    name: highs
+    options: highs-default  
