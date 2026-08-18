@@ -139,6 +139,8 @@ def load_powerplants(
         "ocgt": "OCGT",
         "ccgt": "CCGT",
         "bioenergy": "biomass",
+        "solid biomass": "biomass",
+        "bioenergy": "biomass",
         "ccgt, thermal": "CCGT",
         "hard coal": "coal",
     }
